@@ -69,7 +69,7 @@ dof.hypothesis_test <- function(x, ...) {
 #' @return test statistic
 #' @export
 test_stat <- function(x, ...) {
-  UseMethod("stat")
+  UseMethod("test_stat")
 }
 
 #' Test statistic method for hypothesis tests
@@ -148,7 +148,7 @@ is_significant_at.hypothesis_test <- function(x, alpha, ...) {
 #' @importFrom stats pchisq
 #' @export
 lrt_from_loglik <- function(null_loglik, alt_loglik, dof) {
-  stat <- -2 * null_loglik - alt_loglik
+  stat <- -2 * (null_loglik - alt_loglik)
   p.value <- pchisq(stat, df = dof, lower.tail = FALSE)
   hypothesis_test(stat = stat, p.value = p.value, dof = dof,
                   superclasses = c("likelihood_ratio_test"))

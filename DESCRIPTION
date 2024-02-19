@@ -1,12 +1,25 @@
 Package: hypothesize
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: hypothesize: API for Hypothesis Testing
+Version: 0.9
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person("Alexander", "Towell", , "lex@metafunctor.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-6443-9897"))
+Description: hypothesize is an R package that provides a simple API for hypothesis testing. It is designed to be easy to use, and to provide a consistent interface for hypothesis testing. It is built on top of the likelihood.model package, which provides a consistent interface for likelihood models.
 Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
+Maintainer: Alexander Towell <lex@metafunctor.com>
+License: MIT + file LICENSE
+ByteCompile: true
+LazyData: true
+Imports:
+    generics,
+    dplyr
+URL: https://github.com/queelius/hypothesize,
+    https://queelius.github.io/hypothesize/
+BugReports: https://github.com/queelius/hypothesize/issues
+Suggests: 
+    rmarkdown,
+    dplyr,
+    knitr,
+VignetteBuilder: knitr
 RoxygenNote: 7.3.1
+Config/testthat/edition: 3
+Roxygen: list(markdown = TRUE)

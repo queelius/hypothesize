@@ -27,6 +27,22 @@ their own hypothesis tests in a consistent way.
 In this library, we define the API as a set of generics, and then provide
 a simple implementation of the API for the likelihood ratio test.
 
+## Installation
+
+You can install the development version of `hypothesize` from GitHub with:
+
+```{r}
+# install.packages("devtools")
+#devtools::install_github("queelius/hypothesize")
+```
+
+## Load the Package
+
+```{r}
+#library(hypothesize)
+source("R/hypothesize.R")
+```
+
 ## Core Features
 
 `hypothesize` includes the following core functions:
@@ -51,18 +67,30 @@ Suppose we have two models that aim to explain the same dataset. Model 1 (the nu
 
 ### Step-by-Step Example
 
-1. **Define Log-Likelihoods**: Assume we have calculated the log-likelihoods for both models on the same dataset. For the null model, the log-likelihood is -100, and for the alternative model, it is -90.
+1. **Define Log-Likelihoods**: Assume we have calculated the log-likelihoods for both models on the same dataset. For the null model, the log-likelihood is -100, and for the alternative model, it is -99.
+Assume that the difference in degrees of freedom between the two models is 2.
 
 2. **Perform LRT**: We use `lrt_from_loglik` to perform the Likelihood Ratio Test.
 
-```r
+```{r}
 # Perform LRT
-lrt <- lrt_from_loglik(null_loglik = -100, alt_loglik = -90, dof = 1)
+lrt <- lrt_from_loglik(null_loglik = -100, alt_loglik = -96.105, dof = 3)
 ```
 
-3. **Examine the Test Result**: Extract and examine the test statistic, p-value, and degrees of freedom to evaluate the significance.
+3. **Evaluate Significance**: Determine if the difference in log-likelihoods is significant at the 5% level.
 
-```r
+```{r}
+# Check significance
+is_significant_at(lrt, 0.05)
+```
+
+A negative test result indicates that the alternative model is not compatible with the data at the 5% significance level.
+However, we might want to extract the test statistic, p-value, and degrees of freedom to arrive
+at a more nuanced interpretation.
+
+4. **Examine the Test Result**: Extract and examine the test statistic, p-value, and degrees of freedom to evaluate the significance.
+
+```{r}
 # Extract test statistic
 test_stat(lrt)
 
@@ -73,14 +101,9 @@ pval(lrt)
 dof(lrt)
 ```
 
-4. **Evaluate Significance**: Determine if the difference in log-likelihoods is significant at the 5% level.
-
-```r
-# Check significance
-is_significant_at(lrt, 0.05)
-```
-
-### Interpretation
-
-The output will indicate whether the additional complexity of the alternative model leads to a significantly better fit to the data, based on the LRT statistic and its p-value.
-
+We see that the $p$-value is only slightly above our (arbitrarily) specified
+$\alpha = 0.05$. This suggests that the alternative model may be reasonable
+to consider, but it is not a clear-cut decision. In practice, we would
+likely want to consider other factors, such as the practical significance
+of the additional complexity, or collecting more data to reduce uncertainty,
+before making a final decision.
