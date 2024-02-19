@@ -1,0 +1,11 @@
+home:
+  title: "Hypothesize"
+  description: "An API for hypothesis testing in R"
+navbar:
+  structure:
+    left: [Home, Reference]
+    right: [GitHub]
+  components:
+    GitHub:
+      icon: fa-github
+      href: https://github.com/queelius/hypothesize
