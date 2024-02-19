@@ -26,6 +26,20 @@ hypothesis_test <- function(stat, p.value, dof, superclasses = NULL, ...) {
   res
 }
 
+#' Print method for hypothesis tests
+#' @param x a hypothesis test
+#' @param ... additional arguments
+#' @return a string representation of the hypothesis test
+#' @export
+print.hypothesis_test <- function(x, ...) {
+  cat("Hypothesis test (", class(x)[1], ")\n")
+  cat("-----------------------------\n")
+  cat("Test statistic: ", test_stat(x), "\n")
+  cat("P-value: ", pval(x), "\n")
+  cat("Degrees of freedom: ", dof(x), "\n")
+  cat("Significant at 5% level: ", is_significant_at(x, 0.05), "\n")
+}
+
 #' Generic method for extracting the p-value from a hypothesis test
 #' @param x a hypothesis test object
 #' @param ... additional arguments to pass into the method
@@ -137,7 +151,7 @@ is_significant_at.hypothesis_test <- function(x, alpha, ...) {
 #' @return likelihood ratio test
 #' @examples
 #' # create a likelihood ratio test
-#' lrt <- lrt_from_loglik(null_loglik = -100, alt_loglik = -90, dof = 1)
+#' lrt <- lrt(null_loglik = -100, alt_loglik = -90, dof = 1)
 #' # print the test
 #' test_stat(lrt)
 #' pval(lrt)
@@ -147,9 +161,41 @@ is_significant_at.hypothesis_test <- function(x, alpha, ...) {
 #' 
 #' @importFrom stats pchisq
 #' @export
-lrt_from_loglik <- function(null_loglik, alt_loglik, dof) {
+lrt <- function(null_loglik, alt_loglik, dof) {
   stat <- -2 * (null_loglik - alt_loglik)
   p.value <- pchisq(stat, df = dof, lower.tail = FALSE)
   hypothesis_test(stat = stat, p.value = p.value, dof = dof,
                   superclasses = c("likelihood_ratio_test"))
+}
+
+#' Wald test. This function computes the Wald test statistic and p-value.
+#' 
+#' The Wald test is a general test for the null hypothesis that a parameter
+#' vector is equal to a specified value. The test statistic is the square of
+#' the difference between the estimated parameter and the hypothesized value,
+#' divided by the estimated variance of the parameter. The p-value is the
+#' probability of observing a test statistic as extreme as the one observed
+#' under the null hypothesis.
+#' 
+#' @param estimate the estimated parameter value
+#' @param null_value the hypothesized parameter value
+#' @param se the standard error of the parameter estimate
+#' @return Wald test
+#' @examples
+#' # create a Wald test
+#' wald <- wald_test(estimate = 1, null_value = 0, se = 0.5)
+#' # print the test
+#' test_stat(wald)
+#' pval(wald)
+#' dof(wald)
+#' # check if the test is significant at the 5% level
+#' is_significant_at(wald, 0.05)
+#' 
+#' @importFrom stats qnorm
+#' @export
+wald_test <- function(estimate, se, null_value = 0) {
+  stat <- (estimate - null_value) ^ 2 / (se ^ 2)
+  p.value <- 2 * pnorm(-abs(stat))
+  hypothesis_test(stat = stat, p.value = p.value, dof = 1,
+                  superclasses = c("wald_test"))
 }

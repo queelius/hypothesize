@@ -21,8 +21,8 @@ with:
 Load the Package
 ----------------
 
-    #library(hypothesize)
-    source("R/hypothesize.R")
+    library(hypothesize)
+    #source("R/hypothesize.R")
 
 Core Features
 -------------
@@ -39,15 +39,19 @@ Core Features
 -   `test_stat()`: Obtains the test statistic from the hypothesis test.
 -   `is_significant_at()`: Determines if the hypothesis test is
     significant at a specified significance level.
--   `lrt_from_loglik()`: Performs a Likelihood Ratio Test based on
-    log-likelihood values from nested models.
+-   `lrt()`: Performs a Likelihood Ratio Test based on log-likelihood
+    values from nested models.
+-   `wald_test()`: Performs a Wald test to compare a parameter estimate
+    to a specified value.
+-   `z_test()`: Performs a Z-test to compare a parameter estimate to a
+    specified value.
 
-Example: Using `lrt_from_loglik`
---------------------------------
+Example: Using `lrt`
+--------------------
 
-The `lrt_from_loglik` function is particularly useful for comparing
-nested models — where one model (the null model) is a special case of
-another (the alternative model).
+The `lrt` function is particularly useful for comparing nested models —
+where one model (the null model) is a special case of another (the
+alternative model).
 
 ### Scenario
 
@@ -65,13 +69,24 @@ the data.
     is -99. Assume that the difference in degrees of freedom between the
     two models is 2.
 
-2.  **Perform LRT**: We use `lrt_from_loglik` to perform the Likelihood
-    Ratio Test.
+2.  **Perform LRT**: We use `lrt` to perform the Likelihood Ratio Test.
 
 <!-- -->
 
     # Perform LRT
-    lrt <- lrt_from_loglik(null_loglik = -100, alt_loglik = -96.105, dof = 3)
+    stat <- lrt(null_loglik = -100, alt_loglik = -96.105, dof = 3)
+    print(stat)
+    #> Hypothesis test ( likelihood_ratio_test )
+    #> -----------------------------
+    #> Test statistic:  7.79 
+    #> P-value:  0.0506 
+    #> Degrees of freedom:  3 
+    #> Significant at 5% level:  FALSE
+
+We show the output of the `stat` object, which includes all the relevant
+information about the test. However, we might want to look at its parts
+independently, particularly if we need programmatic accees to relevant
+parts of the test.
 
 1.  **Evaluate Significance**: Determine if the difference in
     log-likelihoods is significant at the 5% level.
@@ -79,7 +94,7 @@ the data.
 <!-- -->
 
     # Check significance
-    is_significant_at(lrt, 0.05)
+    is_significant_at(stat, 0.05)
     #> [1] FALSE
 
 A negative test result indicates that the alternative model is not
@@ -93,15 +108,15 @@ arrive at a more nuanced interpretation.
 <!-- -->
 
     # Extract test statistic
-    test_stat(lrt)
-    #> [1] 7.8
+    test_stat(stat)
+    #> [1] 7.79
 
     # Extract p-value
-    pval(lrt)
-    #> [1] 0.051
+    pval(stat)
+    #> [1] 0.0506
 
     # Extract degrees of freedom
-    dof(lrt)
+    dof(stat)
     #> [1] 3
 
 We see that the *p*-value is only slightly above our (arbitrarily)
@@ -110,3 +125,19 @@ reasonable to consider, but it is not a clear-cut decision. In practice,
 we would likely want to consider other factors, such as the practical
 significance of the additional complexity, or collecting more data to
 reduce uncertainty, before making a final decision.
+
+Example: Using Wald Test
+------------------------
+
+The Wald test is also implemented in `hypothesize`. Tis test is used to
+compare the value of a parameter to a specified value, and is often used
+in the context of regression models.
+
+    # Example: Wald Test
+    print(wald_test(estimate = 1.5, se = 0.5, null_value = 1))
+    #> Hypothesis test ( wald_test )
+    #> -----------------------------
+    #> Test statistic:  1 
+    #> P-value:  0.317 
+    #> Degrees of freedom:  1 
+    #> Significant at 5% level:  FALSE

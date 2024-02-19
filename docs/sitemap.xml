@@ -28,7 +28,13 @@
     <loc>/reference/is_significant_at.hypothesis_test.html</loc>
   </url>
   <url>
+    <loc>/reference/lrt.html</loc>
+  </url>
+  <url>
     <loc>/reference/lrt_from_loglik.html</loc>
+  </url>
+  <url>
+    <loc>/reference/print.hypothesis_test.html</loc>
   </url>
   <url>
     <loc>/reference/pval.html</loc>
@@ -41,5 +47,11 @@
   </url>
   <url>
     <loc>/reference/test_stat.hypothesis_test.html</loc>
+  </url>
+  <url>
+    <loc>/reference/wald_test.html</loc>
+  </url>
+  <url>
+    <loc>/reference/z_test.html</loc>
   </url>
 </urlset>
