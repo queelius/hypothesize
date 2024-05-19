@@ -1,13 +1,12 @@
 `hypothesize`: Statistical Tests in R
 =====================================
 
-`hypothesize` is a simple hypothesis testing API in R. It is mostly
-designed to be used by other libraries so that they can wrap their own
-hypothesis tests in a consistent way.
+`hypothesize` is a simple hypothesis testing API in R.
+It is mostly designed to be used by other libraries so that they can wrap
+their own hypothesis tests in a consistent way.
 
-In this library, we define the API as a set of generics, and then
-provide a simple implementation of the API for the likelihood ratio
-test (LRT), wald test, 
+We define the API as a set of generic methods. We also
+provide implementations for the likelihood ration test (LRT) and the Wald test.
 
 Installation
 ------------
@@ -23,32 +22,43 @@ Load the Package
 
     library(hypothesize)
 
-Core Features
--------------
+The `hypothesize` API
+---------------------
 
 `hypothesize` defines an API for retrieving hypothesis test results. An object
-satisfies the concept of a hypothesis test if it implements the following generics:
+satisfies the concept of a hypothesis test if it implements the following generic
+methods:
 
 -   `pval()`: Extracts the p-value from an object that models a hypothesis test.
+
 -   `dof()`: Retrieves the degrees of freedom associated with a
     hypothesis test.
+
 -   `test_stat()`: Obtains the test statistic from the hypothesis test.
+
 -   `is_significant_at()`: Determines if the hypothesis test is
     significant at a specified significance level.
 
-Implementations
----------------
+Implementation: `hypothesis_test`
+---------------------------------
 
-We provide two implementations for `hypothesize`, the likelihood ratio test
-and the Wald test. We implement a constructor `hypothesis_test` that satisfies
-the concept of a hypothesis test.
+We provide an implementations for `hypothesize`. It it has a
+constructor that takes a statistical test (stat), p-value (p.value),
+a degree-of-freedom (dof), and optionally a list of superclasses and
+any additional arguments that will be passed into the object. Here
+is its type signature:
 
--   `hypothesis_test()`: Creates a hypothesis test object. You can
-    create your own, since `hypothesize` is defined over the previous
-    set of generic methods described, e.g., `pval()`. We use this
-    constructor for two tests we implement, the LRT and Wald tests.
+    `hypothesis_test <- function(stat, p.value, dof, superclasses = NULL, ...) `
+
+It creates a `hypothesis_test` object that implements all of the generic
+methods required by `hypothesize`. The `hypothesis_test` object also
+implements `print` for summary outputs.
+
+We use this constructor for two tests we implement, the LRT and Wald tests:
+
 -   `lrt()`: Performs a Likelihood Ratio Test based on log-likelihood
     values from nested models.
+
 -   `wald_test()`: Performs a Wald test to compare a parameter estimate
     to a specified value.
 
