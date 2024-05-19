@@ -7,7 +7,7 @@ hypothesis tests in a consistent way.
 
 In this library, we define the API as a set of generics, and then
 provide a simple implementation of the API for the likelihood ratio
-test.
+test (LRT), wald test, 
 
 Installation
 ------------
@@ -16,35 +16,41 @@ You can install the development version of `hypothesize` from GitHub
 with:
 
     # install.packages("devtools")
-    #devtools::install_github("queelius/hypothesize")
+    devtools::install_github("queelius/hypothesize")
 
 Load the Package
 ----------------
 
     library(hypothesize)
-    #source("R/hypothesize.R")
 
 Core Features
 -------------
 
-`hypothesize` includes the following core functions:
+`hypothesize` defines an API for retrieving hypothesis test results. An object
+satisfies the concept of a hypothesis test if it implements the following generics:
 
--   `hypothesis_test()`: Creates a hypothesis test object. You can
-    create your own, since the API is defined as a set of generics. This
-    one implements the API, and we also provide a simple implementation
-    for the likelihood ratio test that returns this kind of object.
--   `pval()`: Extracts the p-value from a hypothesis test.
+-   `pval()`: Extracts the p-value from an object that models a hypothesis test.
 -   `dof()`: Retrieves the degrees of freedom associated with a
     hypothesis test.
 -   `test_stat()`: Obtains the test statistic from the hypothesis test.
 -   `is_significant_at()`: Determines if the hypothesis test is
     significant at a specified significance level.
+
+Implementations
+---------------
+
+We provide two implementations for `hypothesize`, the likelihood ratio test
+and the Wald test. We implement a constructor `hypothesis_test` that satisfies
+the concept of a hypothesis test.
+
+-   `hypothesis_test()`: Creates a hypothesis test object. You can
+    create your own, since `hypothesize` is defined over the previous
+    set of generic methods described, e.g., `pval()`. We use this
+    constructor for two tests we implement, the LRT and Wald tests.
 -   `lrt()`: Performs a Likelihood Ratio Test based on log-likelihood
     values from nested models.
 -   `wald_test()`: Performs a Wald test to compare a parameter estimate
     to a specified value.
--   `z_test()`: Performs a Z-test to compare a parameter estimate to a
-    specified value.
 
 Example: Using `lrt`
 --------------------
