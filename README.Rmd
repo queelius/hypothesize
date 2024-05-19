@@ -17,8 +17,8 @@ options(digits = 3)
 It is mostly designed to be used by other libraries so that they can wrap
 their own hypothesis tests in a consistent way.
 
-In this library, we define the API as a set of generics, and then provide
-a simple implementation of the API for the likelihood ratio test.
+In this library, we define the API as a set of generic methods, but we also
+provide implementations for the likelihood ration test (LRT) and the Wald test.
 
 ## Installation
 
@@ -36,21 +36,45 @@ library(hypothesize)
 #source("R/hypothesize.R")
 ```
 
-## Core Features
+The `hypothesize` API
+---------------------
 
-`hypothesize` includes the following core functions:
+`hypothesize` defines an API for retrieving hypothesis test results. An object
+satisfies the concept of a hypothesis test if it implements the following generic
+methods:
 
-- `hypothesis_test()`: Creates a hypothesis test object. You can create your
-    own, since the API is defined as a set of generics. This one implements
-    the API, and we also provide a simple implementation for the likelihood
-    ratio test that returns this kind of object.
-- `pval()`: Extracts the p-value from a hypothesis test.
-- `dof()`: Retrieves the degrees of freedom associated with a hypothesis test.
-- `test_stat()`: Obtains the test statistic from the hypothesis test.
-- `is_significant_at()`: Determines if the hypothesis test is significant at a specified significance level.
-- `lrt()`: Performs a Likelihood Ratio Test based on log-likelihood values from nested models.
-- `wald_test()`: Performs a Wald test to compare a parameter estimate to a specified value.
-- `z_test()`: Performs a Z-test to compare a parameter estimate to a specified value.
+-   `pval()`: Extracts the p-value from an object that models a hypothesis test.
+
+-   `dof()`: Retrieves the degrees of freedom associated with a
+    hypothesis test.
+
+-   `test_stat()`: Obtains the test statistic from the hypothesis test.
+
+-   `is_significant_at()`: Determines if the hypothesis test is
+    significant at a specified significance level.
+
+Implementation: `hypothesis_test`
+---------------------------------
+
+We provide an implementations for `hypothesize`. It it has a
+constructor that takes a statistical test (stat), p-value (p.value),
+a degree-of-freedom (dof), and optionally a list of superclasses and
+any additional arguments that will be passed into the object. Here
+is its type signature:
+
+    `hypothesis_test <- function(stat, p.value, dof, superclasses = NULL, ...) `
+
+It creates a `hypothesis_test` object that implements all of the generic
+methods required by `hypothesize`. The `hypothesis_test` object also
+implements `print` for summary outputs.
+
+We use this constructor for two tests we implement, the LRT and Wald tests:
+
+-   `lrt()`: Performs a Likelihood Ratio Test based on log-likelihood
+    values from nested models.
+
+-   `wald_test()`: Performs a Wald test to compare a parameter estimate
+    to a specified value.
 
 ## Example: Using `lrt`
 
