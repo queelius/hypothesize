@@ -2,36 +2,77 @@
 % Please edit documentation in R/hypothesize.R
 \name{wald_test}
 \alias{wald_test}
-\title{Wald test. This function computes the Wald test statistic and p-value.}
+\title{Wald Test}
 \usage{
 wald_test(estimate, se, null_value = 0)
 }
 \arguments{
-\item{estimate}{the estimated parameter value}
+\item{estimate}{Numeric. The estimated parameter value \eqn{\hat{\theta}}.}
 
-\item{se}{the standard error of the parameter estimate}
+\item{se}{Numeric. The standard error of the estimate, \eqn{SE(\hat{\theta})}.}
 
-\item{null_value}{the hypothesized parameter value}
+\item{null_value}{Numeric. The hypothesized value \eqn{\theta_0} under the
+null hypothesis. Default is 0.}
 }
 \value{
-Wald test
+A \code{hypothesis_test} object of subclass \code{wald_test} containing:
+\describe{
+\item{stat}{The Wald statistic \eqn{W = z^2}}
+\item{p.value}{Two-sided p-value from chi-squared(1) distribution}
+\item{dof}{Degrees of freedom (always 1 for univariate Wald test)}
+\item{z}{The z-score \eqn{(\hat{\theta} - \theta_0) / SE}}
+\item{estimate}{The input estimate}
+\item{se}{The input standard error}
+\item{null_value}{The input null hypothesis value}
+}
 }
 \description{
-The Wald test is a general test for the null hypothesis that a parameter
-vector is equal to a specified value. The test statistic is the square of
-the difference between the estimated parameter and the hypothesized value,
-divided by the estimated variance of the parameter. The p-value is the
-probability of observing a test statistic as extreme as the one observed
-under the null hypothesis.
+Computes the Wald test statistic and p-value for testing whether a
+parameter equals a hypothesized value.
 }
-\examples{
-# create a Wald test
-wald <- wald_test(estimate = 1, null_value = 0, se = 0.5)
-# print the test
-test_stat(wald)
-pval(wald)
-dof(wald)
-# check if the test is significant at the 5\% level
-is_significant_at(wald, 0.05)
+\details{
+The Wald test is a fundamental tool in statistical inference, used to test
+the null hypothesis \eqn{H_0: \theta = \theta_0} against the alternative
+\eqn{H_1: \theta \neq \theta_0}.
 
+The test is based on the asymptotic normality of maximum likelihood
+estimators. Under regularity conditions, if \eqn{\hat{\theta}} is the MLE
+with standard error \eqn{SE(\hat{\theta})}, then:
+
+\deqn{z = \frac{\hat{\theta} - \theta_0}{SE(\hat{\theta})} \sim N(0, 1)}
+
+The Wald statistic is typically reported as \eqn{W = z^2}, which follows
+a chi-squared distribution with 1 degree of freedom under \eqn{H_0}.
+This formulation generalizes naturally to multivariate parameters.
+
+The p-value is computed as \eqn{P(\chi^2_1 \geq W)}, giving a two-sided
+test. The z-score is stored in the returned object for reference.
+}
+\section{Relationship to Other Tests}{
+
+The Wald test is one of the "holy trinity" of likelihood-based tests,
+alongside the likelihood ratio test (\code{\link[=lrt]{lrt()}}) and the score test.
+For large samples, all three are asymptotically equivalent, but they
+can differ substantially in finite samples.
+}
+
+\examples{
+# Test whether a regression coefficient differs from zero
+# Suppose we estimated beta = 2.5 with SE = 0.8
+w <- wald_test(estimate = 2.5, se = 0.8, null_value = 0)
+w
+
+# Extract components
+test_stat(w)        # Wald statistic (chi-squared)
+w$z                 # z-score
+pval(w)             # p-value
+is_significant_at(w, 0.05)
+
+# Test against a non-zero null
+# H0: theta = 2 vs H1: theta != 2
+wald_test(estimate = 2.5, se = 0.8, null_value = 2)
+
+}
+\seealso{
+\code{\link[=lrt]{lrt()}} for likelihood ratio tests, \code{\link[=z_test]{z_test()}} for testing means
 }

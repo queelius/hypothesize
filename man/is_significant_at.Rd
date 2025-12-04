@@ -11,6 +11,8 @@ is_significant_at(x, alpha, ...)
 \item{x}{a hypothesis test object}
 
 \item{alpha}{significance level}
+
+\item{...}{additional arguments passed to methods}
 }
 \value{
 logical indicating whether the test is significant at the given

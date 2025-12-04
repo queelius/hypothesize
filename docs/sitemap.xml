@@ -1,57 +1,28 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dof.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dof.hypothesis_test.html</loc>
-  </url>
-  <url>
-    <loc>/reference/hypothesis_test.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/is_significant_at.html</loc>
-  </url>
-  <url>
-    <loc>/reference/is_significant_at.hypothesis_test.html</loc>
-  </url>
-  <url>
-    <loc>/reference/lrt.html</loc>
-  </url>
-  <url>
-    <loc>/reference/lrt_from_loglik.html</loc>
-  </url>
-  <url>
-    <loc>/reference/print.hypothesis_test.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pval.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pval.hypothesis_test.html</loc>
-  </url>
-  <url>
-    <loc>/reference/test_stat.html</loc>
-  </url>
-  <url>
-    <loc>/reference/test_stat.hypothesis_test.html</loc>
-  </url>
-  <url>
-    <loc>/reference/wald_test.html</loc>
-  </url>
-  <url>
-    <loc>/reference/z_test.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/CLAUDE.html</loc></url>
+<url><loc>/LICENSE-text.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/articles/introduction.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/reference/adjust_pval.html</loc></url>
+<url><loc>/reference/confint.hypothesis_test.html</loc></url>
+<url><loc>/reference/dof.html</loc></url>
+<url><loc>/reference/dof.hypothesis_test.html</loc></url>
+<url><loc>/reference/fisher_combine.html</loc></url>
+<url><loc>/reference/hypothesis_test.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/is_significant_at.html</loc></url>
+<url><loc>/reference/is_significant_at.hypothesis_test.html</loc></url>
+<url><loc>/reference/lrt.html</loc></url>
+<url><loc>/reference/lrt_from_loglik.html</loc></url>
+<url><loc>/reference/print.hypothesis_test.html</loc></url>
+<url><loc>/reference/pval.html</loc></url>
+<url><loc>/reference/pval.hypothesis_test.html</loc></url>
+<url><loc>/reference/test_stat.html</loc></url>
+<url><loc>/reference/test_stat.hypothesis_test.html</loc></url>
+<url><loc>/reference/wald_test.html</loc></url>
+<url><loc>/reference/z_test.html</loc></url>
 </urlset>
+

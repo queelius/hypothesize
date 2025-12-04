@@ -1,0 +1,6 @@
+^doc$
+^Meta$
+^CLAUDE\.md$
+^README\.Rmd$
+^docs$
+^\.github$

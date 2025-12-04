@@ -1,25 +1,31 @@
 Package: hypothesize
-Title: hypothesize: API for Hypothesis Testing
-Version: 0.9
-Authors@R: 
+Title: A Consistent API for Hypothesis Testing
+Version: 0.10.0
+Authors@R:
     person("Alexander", "Towell", , "lex@metafunctor.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-6443-9897"))
-Description: hypothesize is an R package that provides a simple API for hypothesis testing. It is designed to be easy to use, and to provide a consistent interface for hypothesis testing. It is built on top of the likelihood.model package, which provides a consistent interface for likelihood models.
+Description: Provides a consistent API for hypothesis testing built on
+    principles from 'Structure and Interpretation of Computer Programs':
+    data abstraction, closure (combining tests yields tests), and
+    higher-order functions (transforming tests). Implements z-tests,
+    Wald tests, likelihood ratio tests, Fisher's method for combining
+    p-values, and multiple testing corrections. Designed for use by
+    other packages that want to wrap their hypothesis tests in a
+    consistent interface.
 Encoding: UTF-8
 Maintainer: Alexander Towell <lex@metafunctor.com>
 License: MIT + file LICENSE
 ByteCompile: true
 LazyData: true
 Imports:
-    generics,
-    dplyr
+    stats
 URL: https://github.com/queelius/hypothesize,
     https://queelius.github.io/hypothesize/
 BugReports: https://github.com/queelius/hypothesize/issues
-Suggests: 
+Suggests:
+    testthat (>= 3.0.0),
     rmarkdown,
-    dplyr,
-    knitr,
+    knitr
 VignetteBuilder: knitr
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.3
 Config/testthat/edition: 3
 Roxygen: list(markdown = TRUE)

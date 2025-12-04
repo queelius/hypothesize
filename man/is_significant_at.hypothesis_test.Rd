@@ -10,10 +10,12 @@
 \item{x}{a hypothesis test object}
 
 \item{alpha}{significance level}
+
+\item{...}{additional arguments (ignored)}
 }
 \value{
 logical indicating whether the test is significant at the given
-significance level alpha (default is 0.05) or not.
+significance level alpha (e.g., 0.05) or not.
 }
 \description{
 Significance test for the hypothesis_test class.

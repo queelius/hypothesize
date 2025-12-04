@@ -2,34 +2,90 @@
 % Please edit documentation in R/hypothesize.R
 \name{hypothesis_test}
 \alias{hypothesis_test}
-\title{Hypothesis test structure}
+\title{Create a Hypothesis Test Object}
 \usage{
 hypothesis_test(stat, p.value, dof, superclasses = NULL, ...)
 }
 \arguments{
-\item{stat}{test statistic}
+\item{stat}{Numeric. The test statistic.}
 
-\item{p.value}{p-value}
+\item{p.value}{Numeric. The p-value (probability of observing a test
+statistic as extreme as \code{stat} under the null hypothesis).}
 
-\item{dof}{degrees of freedom}
+\item{dof}{Numeric. Degrees of freedom. Use \code{Inf} for tests based on
+the normal distribution.}
+
+\item{superclasses}{Character vector. Additional S3 classes to prepend,
+creating a subclass of \code{hypothesis_test}.}
+
+\item{...}{Additional named arguments stored in the object for
+introspection (e.g., input data, null hypothesis value).}
 }
 \value{
-hypothesis test
+An S3 object of class \code{hypothesis_test} (and any \code{superclasses}),
+which is a list containing at least \code{stat}, \code{p.value}, \code{dof}, plus
+any additional arguments passed via \code{...}.
 }
 \description{
-Hypothesis test structure
+Constructs a hypothesis test object that implements the \code{hypothesize} API.
+This is the base constructor used by specific test functions like \code{\link[=lrt]{lrt()}},
+\code{\link[=wald_test]{wald_test()}}, and \code{\link[=z_test]{z_test()}}.
 }
+\details{
+The \code{hypothesis_test} object is the fundamental data abstraction in this
+package. It represents the result of a statistical hypothesis test and
+provides a consistent interface for extracting results.
+
+This design follows the principle of \strong{data abstraction}: the internal
+representation (a list) is hidden behind accessor functions (\code{\link[=pval]{pval()}},
+\code{\link[=test_stat]{test_stat()}}, \code{\link[=dof]{dof()}}, \code{\link[=is_significant_at]{is_significant_at()}}).
+}
+\section{Extending the Package}{
+
+To create a new type of hypothesis test:
+\enumerate{
+\item Create a constructor function that computes the test statistic
+and p-value.
+\item Call \code{hypothesis_test()} with appropriate \code{superclasses}.
+\item The new test automatically inherits all generic methods.
+}
+
+Example:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{my_test <- function(data, null_value) \{
+  stat <- compute_statistic(data, null_value)
+  p.value <- compute_pvalue(stat)
+  hypothesis_test(
+    stat = stat, p.value = p.value, dof = length(data) - 1,
+    superclasses = "my_test",
+    data = data, null_value = null_value
+  )
+\}
+}\if{html}{\out{</div>}}
+}
+
 \examples{
-# create a hypothesis test
+# Direct construction (usually use specific constructors instead)
 test <- hypothesis_test(stat = 1.96, p.value = 0.05, dof = 1)
-# print the test
 test
-# extract the p-value
+
+# Extract components using the API
 pval(test)
-# extract the degrees of freedom
+test_stat(test)
 dof(test)
-# extract the test statistic
-stat(test)
-# check if the test is significant at the 5\% level
 is_significant_at(test, 0.05)
+
+# Create a custom test type
+custom <- hypothesis_test(
+  stat = 2.5, p.value = 0.01, dof = 10,
+  superclasses = "custom_test",
+  method = "bootstrap", n_replicates = 1000
+)
+class(custom)  # c("custom_test", "hypothesis_test")
+custom$method  # "bootstrap"
+
+}
+\seealso{
+\code{\link[=lrt]{lrt()}}, \code{\link[=wald_test]{wald_test()}}, \code{\link[=z_test]{z_test()}} for specific test constructors;
+\code{\link[=pval]{pval()}}, \code{\link[=test_stat]{test_stat()}}, \code{\link[=dof]{dof()}}, \code{\link[=is_significant_at]{is_significant_at()}} for accessors
 }

@@ -2,55 +2,92 @@
 % Please edit documentation in R/hypothesize.R
 \name{lrt}
 \alias{lrt}
-\title{Likelihood ratio test. This function computes the likelihood ratio test
-statistic and p-value.}
+\title{Likelihood Ratio Test}
 \usage{
 lrt(null_loglik, alt_loglik, dof)
 }
 \arguments{
-\item{null_loglik}{the likelihood value from a simpler likelihood model nested
-within the alternative model}
+\item{null_loglik}{Numeric. The maximized log-likelihood under the null
+(simpler) model.}
 
-\item{alt_loglik}{the likelihood value from the more complicated model}
+\item{alt_loglik}{Numeric. The maximized log-likelihood under the
+alternative (more complex) model.}
 
-\item{dof}{degrees of freedom}
+\item{dof}{Positive integer. Degrees of freedom, typically the difference
+in the number of free parameters between models.}
 }
 \value{
-likelihood ratio test
+A \code{hypothesis_test} object of subclass \code{likelihood_ratio_test}
+containing:
+\describe{
+\item{stat}{The LRT statistic \eqn{\Lambda = -2(\ell_0 - \ell_1)}}
+\item{p.value}{P-value from chi-squared distribution with \code{dof} degrees
+of freedom}
+\item{dof}{The degrees of freedom}
+\item{null_loglik}{The input null model log-likelihood}
+\item{alt_loglik}{The input alternative model log-likelihood}
+}
 }
 \description{
-Assumptions:
-(1) The null model is nested within the alternative model.
-(2) The likelihood values are computed from the same data set.
+Computes the likelihood ratio test (LRT) statistic and p-value for
+comparing nested models.
 }
 \details{
-The degrees of freedom are conceptualized in the context of vector spaces.
-Thus, by (1), the parameter space of the null model is a subspace of the
-parameter space of the alternative model, both of which are vector spaces.
-The degrees of freedom is the difference in the dimension of the null model
-and the alternative model. Normally, this boils down to the difference in
-the number of parameters between the two models, e.g., fixing some of the
-components in the null model to some constant value.
+The likelihood ratio test is a fundamental method for comparing nested
+statistical models. Given a null model \eqn{M_0} (simpler, fewer parameters)
+nested within an alternative model \eqn{M_1} (more complex), the LRT tests
+whether the additional complexity of \eqn{M_1} is justified by the data.
 
-The likelihood ratio test statistic is defined as:
+The test statistic is:
 
-LRT = -2 (null_loglik - alt_loglik)
+\deqn{\Lambda = -2 \left( \ell_0 - \ell_1 \right) = -2 \log \frac{L_0}{L_1}}
 
-which, under the null hypothesis, is asymptotically chi-squared distributed
-with degrees of freedom equal to the dof previously defined. Thus, we can
-ask whether the observed likelihood ratio test statistic is significantly
-different from the expected value under the null hypothesis. The p-value is
-the probability of observing an LRT statistic as extreme as the one observed
-under the null hypothesis.
+where \eqn{\ell_0} and \eqn{\ell_1} are the maximized log-likelihoods under
+the null and alternative models, respectively.
+
+Under \eqn{H_0} and regularity conditions, \eqn{\Lambda} is asymptotically
+chi-squared distributed with degrees of freedom equal to the difference in
+the number of free parameters between models.
 }
-\examples{
-# create a likelihood ratio test
-lrt <- lrt(null_loglik = -100, alt_loglik = -90, dof = 1)
-# print the test
-test_stat(lrt)
-pval(lrt)
-dof(lrt)
-# check if the test is significant at the 5\% level
-is_significant_at(lrt, 0.05)
+\section{Assumptions}{
 
+\enumerate{
+\item The null model must be nested within the alternative model
+(i.e., obtainable by constraining parameters of the alternative).
+\item Both likelihoods must be computed from the same dataset.
+\item Standard regularity conditions for asymptotic chi-squared
+distribution must hold (true parameter not on boundary, etc.).
+}
+}
+
+\section{Relationship to Other Tests}{
+
+The LRT is one of the "holy trinity" of likelihood-based tests, alongside
+the Wald test (\code{\link[=wald_test]{wald_test()}}) and the score (Lagrange multiplier) test.
+All three are asymptotically equivalent under \eqn{H_0}, but the LRT is
+often preferred because it is invariant to reparameterization.
+}
+
+\examples{
+# Comparing nested regression models
+# Null model: y ~ x1 (log-likelihood = -150)
+# Alt model:  y ~ x1 + x2 + x3 (log-likelihood = -140)
+# Difference: 3 additional parameters
+
+test <- lrt(null_loglik = -150, alt_loglik = -140, dof = 3)
+test
+
+# Is the more complex model significantly better?
+is_significant_at(test, 0.05)
+
+# Extract the test statistic (should be 20)
+test_stat(test)
+
+# Access stored inputs for inspection
+test$null_loglik
+test$alt_loglik
+
+}
+\seealso{
+\code{\link[=wald_test]{wald_test()}} for testing individual parameters
 }

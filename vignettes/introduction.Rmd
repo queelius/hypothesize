@@ -1,0 +1,271 @@
+---
+title: "Introduction to hypothesize"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to hypothesize}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(hypothesize)
+```
+
+## What is hypothesize?
+
+The `hypothesize` package provides a consistent API for hypothesis testing in R.
+It is designed around three principles from *Structure and Interpretation of
+Computer Programs* (SICP):
+
+1. **Data Abstraction**: Hide implementation details behind a clean interface
+2. **Closure Property**: Combining tests yields tests
+3. **Higher-Order Functions**: Transform tests into new tests
+
+This vignette introduces the package through examples, building from simple
+primitives to more sophisticated compositions.
+
+## The Hypothesis Testing Interface
+
+Every hypothesis test in this package implements the same interface:
+
+- `pval(x)` — extract the p-value
+- `test_stat(x)` — extract the test statistic
+- `dof(x)` — extract degrees of freedom
+- `is_significant_at(x, alpha)` — check significance at level α
+
+This abstraction means you can work with any test the same way, regardless of
+its internal implementation.
+
+## Primitive Tests
+
+### The Z-Test: Simplest Case
+
+The z-test is the most basic hypothesis test. It tests whether a population
+mean equals a hypothesized value when the population standard deviation is
+known:
+
+```{r}
+# A manufacturer claims widgets weigh 100g on average
+# We test 30 widgets (population SD is known to be 5g from historical data)
+set.seed(42)
+weights <- rnorm(30, mean = 102, sd = 5)
+
+# Test H0: mu = 100 vs H1: mu != 100
+z <- z_test(weights, mu0 = 100, sigma = 5)
+z
+```
+
+We can extract components:
+
+```{r}
+test_stat(z)   # The z-statistic
+pval(z)        # The p-value
+dof(z)         # Degrees of freedom (Inf for z-test)
+```
+
+### The Wald Test: General Parameters
+
+The Wald test generalizes the z-test to any asymptotically normal estimator.
+If you have an estimate and its standard error, you can test whether the true
+parameter equals a hypothesized value:
+
+```{r}
+# Suppose we fit a regression and got coefficient = 2.3 with SE = 0.8
+# Test H0: beta = 0 (no effect) vs H1: beta != 0
+w <- wald_test(estimate = 2.3, se = 0.8, null_value = 0)
+w
+
+is_significant_at(w, 0.05)
+```
+
+The Wald statistic is z², which follows a chi-squared distribution with 1 df:
+
+```{r}
+w$z            # The z-score
+test_stat(w)   # z² (the Wald statistic)
+```
+
+### The Likelihood Ratio Test: Comparing Models
+
+The LRT compares nested models by examining the ratio of their likelihoods:
+
+```{r}
+# Suppose we fit two models:
+# Null model (simpler): log-likelihood = -250
+# Alt model (complex):  log-likelihood = -240
+# The alt model has 3 extra parameters
+
+test <- lrt(null_loglik = -250, alt_loglik = -240, dof = 3)
+test
+
+# Is the more complex model justified?
+is_significant_at(test, 0.05)
+```
+
+## Duality: Tests and Confidence Intervals
+
+Hypothesis tests and confidence intervals are two sides of the same coin. A 95%
+confidence interval contains exactly those parameter values that would *not* be
+rejected at the 5% level.
+
+For tests that store their estimates, we can extract confidence intervals:
+
+```{r}
+w <- wald_test(estimate = 5.2, se = 1.1)
+confint(w)               # 95% CI
+confint(w, level = 0.99) # 99% CI
+```
+
+Notice the duality: the CI contains 0 if and only if the test is not significant:
+
+```{r}
+# Is 0 in the 95% CI?
+ci <- confint(w)
+ci["lower"] < 0 && 0 < ci["upper"]
+
+# Is the test significant at 5%?
+is_significant_at(w, 0.05)
+```
+
+## The Closure Property: Combining Tests
+
+A key principle from SICP is the *closure property*: when you combine things,
+you get back the same kind of thing. In our case, combining hypothesis tests
+yields a hypothesis test.
+
+Fisher's method combines p-values from independent tests:
+
+```{r}
+# Three independent studies test the same hypothesis
+# None is individually significant, but together...
+p1 <- 0.08
+p2 <- 0.12
+p3 <- 0.06
+
+combined <- fisher_combine(p1, p2, p3)
+combined
+
+is_significant_at(combined, 0.05)
+```
+
+You can also combine actual test objects:
+
+```{r}
+t1 <- wald_test(estimate = 1.2, se = 0.8)
+t2 <- wald_test(estimate = 0.9, se = 0.6)
+t3 <- wald_test(estimate = 1.5, se = 1.0)
+
+fisher_combine(t1, t2, t3)
+```
+
+Because the result is itself a `hypothesis_test`, you can use all the same
+methods on it:
+
+```{r}
+combined <- fisher_combine(0.05, 0.10, 0.15)
+pval(combined)
+test_stat(combined)
+dof(combined)
+```
+
+## Higher-Order Functions: Transforming Tests
+
+When performing multiple tests, we need to adjust p-values to control error
+rates. The `adjust_pval()` function transforms tests by adjusting their p-values:
+
+```{r}
+# Perform 5 tests
+tests <- list(
+  wald_test(estimate = 2.5, se = 1.0),
+  wald_test(estimate = 1.8, se = 0.9),
+  wald_test(estimate = 1.2, se = 0.7),
+  wald_test(estimate = 0.9, se = 0.8),
+  wald_test(estimate = 2.1, se = 1.1)
+)
+
+# Original p-values
+sapply(tests, pval)
+
+# Bonferroni-adjusted p-values
+adjusted <- adjust_pval(tests, method = "bonferroni")
+sapply(adjusted, pval)
+
+# Less conservative: Benjamini-Hochberg (FDR control)
+adjusted_bh <- adjust_pval(tests, method = "BH")
+sapply(adjusted_bh, pval)
+```
+
+The adjusted tests retain all original properties:
+
+```{r}
+adj <- adjusted[[1]]
+test_stat(adj)           # Same as original
+adj$original_pval        # Can access unadjusted p-value
+adj$adjustment_method    # Method used
+```
+
+Because adjusted tests are still hypothesis tests, they compose naturally:
+
+```{r}
+# First adjust, then combine
+adjusted <- adjust_pval(tests[1:3], method = "bonferroni")
+fisher_combine(adjusted[[1]], adjusted[[2]], adjusted[[3]])
+```
+
+## Extending the Package
+
+The `hypothesis_test()` constructor makes it easy to add new test types:
+
+```{r}
+# Example: Create a simple chi-squared goodness-of-fit test wrapper
+chisq_gof <- function(observed, expected) {
+  stat <- sum((observed - expected)^2 / expected)
+  df <- length(observed) - 1
+  p.value <- pchisq(stat, df = df, lower.tail = FALSE)
+
+  hypothesis_test(
+    stat = stat,
+    p.value = p.value,
+    dof = df,
+    superclasses = "chisq_gof_test",
+    observed = observed,
+    expected = expected
+  )
+}
+
+# Use it
+result <- chisq_gof(
+  observed = c(45, 35, 20),
+  expected = c(40, 40, 20)
+)
+result
+
+# It works with all the standard functions
+pval(result)
+is_significant_at(result, 0.05)
+```
+
+## Summary
+
+The `hypothesize` package demonstrates that a small set of well-designed
+primitives and combinators can provide a powerful, extensible framework for
+hypothesis testing:
+
+| Function | Purpose | SICP Principle |
+|----------|---------|----------------|
+| `hypothesis_test()` | Base constructor | Data abstraction |
+| `z_test()`, `wald_test()`, `lrt()` | Primitive tests | Building blocks |
+| `pval()`, `test_stat()`, `dof()` | Accessors | Abstraction barrier |
+| `fisher_combine()` | Combine tests | Closure property |
+| `adjust_pval()` | Transform tests | Higher-order functions |
+| `confint()` | Extract CI | Duality |
+
+This design makes hypothesis testing composable, extensible, and easy to reason
+about.

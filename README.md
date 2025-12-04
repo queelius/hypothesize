@@ -1,159 +1,155 @@
-`hypothesize`: Statistical Tests in R
-=====================================
 
-`hypothesize` is a simple hypothesis testing API in R.
-It is mostly designed to be used by other libraries so that they can wrap
-their own hypothesis tests in a consistent way.
+# hypothesize
 
-We define the API as a set of generic methods. We also
-provide implementations for the likelihood ration test (LRT) and the Wald test.
+A consistent API for hypothesis testing in R, designed around principles
+from *Structure and Interpretation of Computer Programs* (SICP): -
+**Data Abstraction**: Tests are objects with a clean accessor
+interface - **Closure Property**: Combining tests yields tests -
+**Higher-Order Functions**: Transform tests into new tests
 
-Installation
-------------
+## Installation
 
-You can install the development version of `hypothesize` from GitHub
-with:
+``` r
+# install.packages("devtools")
+devtools::install_github("queelius/hypothesize")
+```
 
-    # install.packages("devtools")
-    devtools::install_github("queelius/hypothesize")
+## The Interface
 
-Load the Package
-----------------
+Every hypothesis test implements the same generic methods:
 
-    library(hypothesize)
+``` r
+# Create a Wald test
+w <- wald_test(estimate = 2.5, se = 0.8, null_value = 0)
 
-The `hypothesize` API
----------------------
+pval(w)                    # p-value
+#> [1] 0.00178
+test_stat(w)               # test statistic
+#> [1] 9.77
+dof(w)                     # degrees of freedom
+#> [1] 1
+is_significant_at(w, 0.05) # significance check
+#> [1] TRUE
+```
 
-`hypothesize` defines an API for retrieving hypothesis test results. An object
-satisfies the concept of a hypothesis test if it implements the following generic
-methods:
+## Primitive Tests
 
--   `pval()`: Extracts the p-value from an object that models a hypothesis test.
+### Z-Test (simplest case)
 
--   `dof()`: Retrieves the degrees of freedom associated with a
-    hypothesis test.
+``` r
+# Test if population mean equals 100 (known sigma = 15)
+set.seed(42)
+x <- rnorm(30, mean = 105, sd = 15)
+z_test(x, mu0 = 100, sigma = 15)
+#> Hypothesis test ( z_test )
+#> -----------------------------
+#> Test statistic:  2.2 
+#> P-value:  0.0277 
+#> Degrees of freedom:  Inf 
+#> Significant at 5% level:  TRUE
+```
 
--   `test_stat()`: Obtains the test statistic from the hypothesis test.
+### Wald Test (general parameters)
 
--   `is_significant_at()`: Determines if the hypothesis test is
-    significant at a specified significance level.
+``` r
+# Test if a regression coefficient equals zero
+wald_test(estimate = 1.8, se = 0.7)
+#> Hypothesis test ( wald_test )
+#> -----------------------------
+#> Test statistic:  6.61 
+#> P-value:  0.0101 
+#> Degrees of freedom:  1 
+#> Significant at 5% level:  TRUE
+```
 
-Implementation: `hypothesis_test`
----------------------------------
+### Likelihood Ratio Test (model comparison)
 
-We provide an implementations for `hypothesize`. It it has a
-constructor that takes a statistical test (stat), p-value (p.value),
-a degree-of-freedom (dof), and optionally a list of superclasses and
-any additional arguments that will be passed into the object. Here
-is its type signature:
+``` r
+# Compare nested models
+lrt(null_loglik = -150, alt_loglik = -140, dof = 3)
+#> Hypothesis test ( likelihood_ratio_test )
+#> -----------------------------
+#> Test statistic:  20 
+#> P-value:  0.00017 
+#> Degrees of freedom:  3 
+#> Significant at 5% level:  TRUE
+```
 
-    `hypothesis_test <- function(stat, p.value, dof, superclasses = NULL, ...) `
+## Combining Tests (Closure Property)
 
-It creates a `hypothesis_test` object that implements all of the generic
-methods required by `hypothesize`. The `hypothesis_test` object also
-implements `print` for summary outputs.
+Fisher’s method combines independent p-values—and returns a hypothesis
+test:
 
-We use this constructor for two tests we implement, the LRT and Wald tests:
+``` r
+# Three studies, none individually significant
+fisher_combine(0.08, 0.12, 0.06)
+#> Hypothesis test ( fisher_combined_test )
+#> -----------------------------
+#> Test statistic:  14.9 
+#> P-value:  0.0209 
+#> Degrees of freedom:  6 
+#> Significant at 5% level:  TRUE
+```
 
--   `lrt()`: Performs a Likelihood Ratio Test based on log-likelihood
-    values from nested models.
+## Transforming Tests (Higher-Order Functions)
 
--   `wald_test()`: Performs a Wald test to compare a parameter estimate
-    to a specified value.
+Adjust p-values for multiple testing:
 
-Example: Using `lrt`
---------------------
+``` r
+tests <- list(
+  wald_test(estimate = 2.5, se = 1.0),
+  wald_test(estimate = 1.8, se = 0.9),
+  wald_test(estimate = 1.2, se = 0.7)
+)
 
-The `lrt` function is particularly useful for comparing nested models —
-where one model (the null model) is a special case of another (the
-alternative model).
+# Original p-values
+sapply(tests, pval)
+#> [1] 0.0124 0.0455 0.0865
 
-### Scenario
+# Bonferroni-adjusted
+sapply(adjust_pval(tests, method = "bonferroni"), pval)
+#> [1] 0.0373 0.1365 0.2594
+```
 
-Suppose we have two models that aim to explain the same dataset. Model 1
-(the null model) is simpler, with fewer parameters, while Model 2 (the
-alternative model) includes additional parameters. We wish to test if
-the complexity of Model 2 is justified by a significantly better fit to
-the data.
+## Duality: Tests ↔ Confidence Intervals
 
-### Step-by-Step Example
+``` r
+w <- wald_test(estimate = 5.0, se = 1.2)
+confint(w)
+#> lower upper 
+#>  2.65  7.35
+confint(w, level = 0.99)
+#> lower upper 
+#>  1.91  8.09
+```
 
-1.  **Define Log-Likelihoods**: Assume we have calculated the
-    log-likelihoods for both models on the same dataset. For the null
-    model, the log-likelihood is -100, and for the alternative model, it
-    is -99. Assume that the difference in degrees of freedom between the
-    two models is 2.
+## Extending the Package
 
-2.  **Perform LRT**: We use `lrt` to perform the Likelihood Ratio Test.
+Create new test types by calling `hypothesis_test()`:
 
-<!-- -->
+``` r
+# Custom chi-squared goodness-of-fit wrapper
+chisq_gof <- function(observed, expected) {
+  stat <- sum((observed - expected)^2 / expected)
+  df <- length(observed) - 1
+  hypothesis_test(
+    stat = stat,
+    p.value = pchisq(stat, df, lower.tail = FALSE),
+    dof = df,
+    superclasses = "chisq_gof_test"
+  )
+}
 
-    # Perform LRT
-    stat <- lrt(null_loglik = -100, alt_loglik = -96.105, dof = 3)
-    print(stat)
-    #> Hypothesis test ( likelihood_ratio_test )
-    #> -----------------------------
-    #> Test statistic:  7.79 
-    #> P-value:  0.0506 
-    #> Degrees of freedom:  3 
-    #> Significant at 5% level:  FALSE
+chisq_gof(observed = c(45, 35, 20), expected = c(40, 40, 20))
+#> Hypothesis test ( chisq_gof_test )
+#> -----------------------------
+#> Test statistic:  1.25 
+#> P-value:  0.535 
+#> Degrees of freedom:  2 
+#> Significant at 5% level:  FALSE
+```
 
-We show the output of the `stat` object, which includes all the relevant
-information about the test. However, we might want to look at its parts
-independently, particularly if we need programmatic accees to relevant
-parts of the test.
+## Learn More
 
-1.  **Evaluate Significance**: Determine if the difference in
-    log-likelihoods is significant at the 5% level.
-
-<!-- -->
-
-    # Check significance
-    is_significant_at(stat, 0.05)
-    #> [1] FALSE
-
-A negative test result indicates that the alternative model is not
-compatible with the data at the 5% significance level. However, we might
-want to extract the test statistic, p-value, and degrees of freedom to
-arrive at a more nuanced interpretation.
-
-1.  **Examine the Test Result**: Extract and examine the test statistic,
-    p-value, and degrees of freedom to evaluate the significance.
-
-<!-- -->
-
-    # Extract test statistic
-    test_stat(stat)
-    #> [1] 7.79
-
-    # Extract p-value
-    pval(stat)
-    #> [1] 0.0506
-
-    # Extract degrees of freedom
-    dof(stat)
-    #> [1] 3
-
-We see that the *p*-value is only slightly above our (arbitrarily)
-specified *α* = 0.05. This suggests that the alternative model may be
-reasonable to consider, but it is not a clear-cut decision. In practice,
-we would likely want to consider other factors, such as the practical
-significance of the additional complexity, or collecting more data to
-reduce uncertainty, before making a final decision.
-
-Example: Using Wald Test
-------------------------
-
-The Wald test is also implemented in `hypothesize`. Tis test is used to
-compare the value of a parameter to a specified value, and is often used
-in the context of regression models.
-
-    # Example: Wald Test
-    print(wald_test(estimate = 1.5, se = 0.5, null_value = 1))
-    #> Hypothesis test ( wald_test )
-    #> -----------------------------
-    #> Test statistic:  1 
-    #> P-value:  0.317 
-    #> Degrees of freedom:  1 
-    #> Significant at 5% level:  FALSE
+See `vignette("introduction", package = "hypothesize")` for a full
+tutorial.
