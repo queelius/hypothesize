@@ -5,3 +5,6 @@
 ^docs$
 ^\.github$
 ^cran-comments\.md$
+^CRAN-SUBMISSION$
+^\.zenodo\.json$
+^CITATION\.cff$

@@ -1,0 +1,36 @@
+{
+  "title": "hypothesize: A Consistent API for Hypothesis Testing",
+  "description": "An R package providing a consistent API for hypothesis testing built on SICP principles: data abstraction, closure property (combining tests yields tests), and higher-order functions (transforming tests). Implements z-tests, Wald tests, likelihood ratio tests, Fisher's method for combining p-values, and multiple testing corrections.",
+  "upload_type": "software",
+  "creators": [
+    {
+      "name": "Towell, Alexander",
+      "orcid": "0000-0001-6443-9897",
+      "affiliation": "Southern Illinois University Edwardsville"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "hypothesis-testing",
+    "statistics",
+    "R",
+    "likelihood-ratio-test",
+    "wald-test",
+    "fisher-method",
+    "p-value",
+    "multiple-testing"
+  ],
+  "related_identifiers": [
+    {
+      "relation": "isSupplementTo",
+      "identifier": "https://github.com/queelius/hypothesize",
+      "scheme": "url"
+    },
+    {
+      "relation": "isDocumentedBy",
+      "identifier": "https://queelius.github.io/hypothesize/",
+      "scheme": "url"
+    }
+  ],
+  "version": "0.10.0"
+}
