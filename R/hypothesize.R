@@ -71,7 +71,7 @@
 #'
 #' @seealso [lrt()], [wald_test()], [z_test()] for specific test constructors;
 #'   [pval()], [test_stat()], [dof()], [is_significant_at()] for accessors
-#' @importFrom stats pf pchisq qt qnorm
+#' @importFrom stats pchisq qnorm
 #' @export
 hypothesis_test <- function(stat, p.value, dof, superclasses = NULL, ...) {
   res <- list(stat = stat, p.value = p.value, dof = dof, ...)

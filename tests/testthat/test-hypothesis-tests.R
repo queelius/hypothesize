@@ -363,6 +363,33 @@ test_that("adjusted tests can be combined with fisher_combine", {
   expect_equal(test_stat(combined), expected_stat)
 })
 
+# =============================================================================
+# print method
+# =============================================================================
+
+test_that("print.hypothesis_test prints expected output", {
+  ht <- hypothesis_test(stat = 2.0, p.value = 0.05, dof = 1,
+                        superclasses = "my_test")
+  expect_output(print(ht), "Hypothesis test")
+  expect_output(print(ht), "my_test")
+  expect_output(print(ht), "Test statistic:")
+  expect_output(print(ht), "P-value:")
+  expect_output(print(ht), "Degrees of freedom:")
+  expect_output(print(ht), "Significant at 5% level:")
+})
+
+test_that("print.hypothesis_test returns x invisibly", {
+  ht <- hypothesis_test(stat = 2.0, p.value = 0.05, dof = 1)
+  result <- withVisible(print(ht))
+  expect_false(result$visible)
+  expect_identical(result$value, ht)
+})
+
+test_that("fisher_combine rejects non-numeric non-test inputs", {
+  expect_error(fisher_combine("not_a_pvalue"),
+               "must be hypothesis_test objects or numeric")
+})
+
 test_that("all test types work with is_significant_at", {
   z <- z_test(rnorm(30, mean = 1), mu0 = 0, sigma = 1)
   w <- wald_test(estimate = 2, se = 1)
