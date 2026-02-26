@@ -8,3 +8,9 @@
 ^CRAN-SUBMISSION$
 ^\.zenodo\.json$
 ^CITATION\.cff$
+^LICENSE\.md$
+^CONTRIBUTING\.md$
+^CODE_OF_CONDUCT\.md$
+^paper$
+^\.claude$
+^joss-audit-report\.md$

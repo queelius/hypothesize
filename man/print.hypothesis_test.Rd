@@ -12,7 +12,7 @@
 \item{...}{additional arguments}
 }
 \value{
-a string representation of the hypothesis test
+Returns \code{x} invisibly.
 }
 \description{
 Print method for hypothesis tests

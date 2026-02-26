@@ -82,7 +82,7 @@ hypothesis_test <- function(stat, p.value, dof, superclasses = NULL, ...) {
 #' Print method for hypothesis tests
 #' @param x a hypothesis test
 #' @param ... additional arguments
-#' @return a string representation of the hypothesis test
+#' @return Returns `x` invisibly.
 #' @export
 print.hypothesis_test <- function(x, ...) {
   cat("Hypothesis test (", class(x)[1], ")\n")
@@ -91,6 +91,7 @@ print.hypothesis_test <- function(x, ...) {
   cat("P-value: ", pval(x), "\n")
   cat("Degrees of freedom: ", dof(x), "\n")
   cat("Significant at 5% level: ", is_significant_at(x, 0.05), "\n")
+  invisible(x)
 }
 
 #' Generic method for extracting the p-value from a hypothesis test

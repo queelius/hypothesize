@@ -1,6 +1,8 @@
 
 # hypothesize
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18765626.svg)](https://doi.org/10.5281/zenodo.18765626)
+
 A consistent API for hypothesis testing in R, designed around principles
 from *Structure and Interpretation of Computer Programs* (SICP): -
 **Data Abstraction**: Tests are objects with a clean accessor
