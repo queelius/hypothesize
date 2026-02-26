@@ -402,3 +402,60 @@ test_that("all test types work with is_significant_at", {
   expect_type(is_significant_at(l, 0.05), "logical")
   expect_type(is_significant_at(f, 0.05), "logical")
 })
+
+# =============================================================================
+# score_test
+# =============================================================================
+
+test_that("score_test computes correct univariate statistic and p-value", {
+  s <- score_test(score = 2.0, fisher_info = 1.0)
+  expect_s3_class(s, "score_test")
+  expect_s3_class(s, "hypothesis_test")
+  expect_equal(test_stat(s), 4.0)
+  expect_equal(dof(s), 1)
+  expect_equal(pval(s), pchisq(4.0, df = 1, lower.tail = FALSE))
+})
+
+test_that("score_test stores metadata", {
+  s <- score_test(score = 1.5, fisher_info = 2.0, null_value = 3.0)
+  expect_equal(s$score, 1.5)
+  expect_equal(s$fisher_info, 2.0)
+  expect_equal(s$null_value, 3.0)
+})
+
+test_that("score_test works with all accessors", {
+  s <- score_test(score = 3.0, fisher_info = 4.0)
+  expect_type(pval(s), "double")
+  expect_type(test_stat(s), "double")
+  expect_type(dof(s), "double")
+  expect_type(is_significant_at(s, 0.05), "logical")
+  expect_output(print(s), "score_test")
+})
+
+test_that("score_test is asymptotically equivalent to wald_test", {
+  n <- 100; sigma <- 2; xbar <- 5.5; mu0 <- 5.0
+  se <- sigma / sqrt(n)
+  score_val <- n * (xbar - mu0) / sigma^2
+  info_val <- n / sigma^2
+  w <- wald_test(estimate = xbar, se = se, null_value = mu0)
+  s <- score_test(score = score_val, fisher_info = info_val)
+  expect_equal(test_stat(s), test_stat(w), tolerance = 1e-10)
+  expect_equal(pval(s), pval(w), tolerance = 1e-10)
+})
+
+test_that("score_test multivariate computes correct statistic", {
+  score_vec <- c(2.0, 1.0)
+  info_mat <- matrix(c(2.0, 0.5, 0.5, 1.0), 2, 2)
+  s <- score_test(score = score_vec, fisher_info = info_mat)
+  expected <- as.numeric(t(score_vec) %*% solve(info_mat) %*% score_vec)
+  expect_equal(test_stat(s), expected)
+  expect_equal(dof(s), 2)
+  expect_equal(pval(s), pchisq(expected, df = 2, lower.tail = FALSE))
+})
+
+test_that("score_test multivariate with diagonal matches sum of univariates", {
+  s1 <- score_test(score = 2.0, fisher_info = 1.0)
+  s2 <- score_test(score = 3.0, fisher_info = 2.0)
+  s_multi <- score_test(score = c(2.0, 3.0), fisher_info = diag(c(1.0, 2.0)))
+  expect_equal(test_stat(s_multi), test_stat(s1) + test_stat(s2), tolerance = 1e-10)
+})

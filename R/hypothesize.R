@@ -440,6 +440,82 @@ wald_test <- function(estimate, se, null_value = 0) {
   )
 }
 
+#' Score Test (Lagrange Multiplier Test)
+#'
+#' Computes the score test statistic and p-value for testing whether a
+#' parameter equals a hypothesized value, using the score function and
+#' Fisher information evaluated at the null.
+#'
+#' @details
+#' The score test is one of the "holy trinity" of likelihood-based tests,
+#' alongside the Wald test ([wald_test()]) and the likelihood ratio test
+#' ([lrt()]). All three are asymptotically equivalent under \eqn{H_0}, but
+#' they differ in what they require:
+#'
+#' \itemize{
+#'   \item **Wald test**: Needs the MLE and its standard error — requires
+#'     fitting the alternative model.
+#'   \item **LRT**: Needs maximized log-likelihoods under both models —
+#'     requires fitting both.
+#'   \item **Score test**: Needs only the score and information at
+#'     \eqn{\theta_0} — requires fitting only the null model.
+#' }
+#'
+#' This makes the score test computationally attractive when the null model
+#' is simple but the alternative is expensive to fit.
+#'
+#' For the univariate case:
+#' \deqn{S = \frac{U(\theta_0)^2}{I(\theta_0)} \sim \chi^2_1}
+#'
+#' For the multivariate case with \eqn{k} parameters:
+#' \deqn{S = U(\theta_0)^\top I(\theta_0)^{-1} U(\theta_0) \sim \chi^2_k}
+#'
+#' The function detects scalar vs. vector input and dispatches accordingly.
+#'
+#' @param score Numeric scalar or vector. The score function
+#'   \eqn{U(\theta_0) = \partial \ell / \partial \theta} evaluated at the
+#'   null value.
+#' @param fisher_info Numeric scalar or matrix. The Fisher information
+#'   \eqn{I(\theta_0)} evaluated at the null value.
+#' @param null_value Optional. The null hypothesis value, stored for
+#'   reference but not used in computation.
+#'
+#' @return A `hypothesis_test` object of subclass `score_test`.
+#'
+#' @examples
+#' # Univariate score test
+#' score_test(score = 2, fisher_info = 2)
+#'
+#' # Compare the trinity on the same problem
+#' score_test(score = 2, fisher_info = 2)
+#' wald_test(estimate = 6, se = sqrt(6/10), null_value = 5)
+#'
+#' # Multivariate
+#' score_test(score = c(1, 2), fisher_info = diag(c(1, 1)))
+#'
+#' @seealso [wald_test()], [lrt()] for the other members of the trinity
+#' @importFrom stats pchisq
+#' @export
+score_test <- function(score, fisher_info, null_value = NULL) {
+  if (is.matrix(fisher_info)) {
+    k <- length(score)
+    stat <- as.numeric(t(score) %*% solve(fisher_info) %*% score)
+  } else {
+    k <- 1
+    stat <- score^2 / fisher_info
+  }
+  p.value <- pchisq(stat, df = k, lower.tail = FALSE)
+  hypothesis_test(
+    stat = stat,
+    p.value = p.value,
+    dof = k,
+    superclasses = "score_test",
+    score = score,
+    fisher_info = fisher_info,
+    null_value = null_value
+  )
+}
+
 #' Combine Independent P-Values (Fisher's Method)
 #'
 #' Combines p-values from independent hypothesis tests into a single
