@@ -1048,3 +1048,119 @@ union_test <- function(...) {
     component_pvals = pvals
   )
 }
+
+#' Invert a Test into a Confidence Set (Test-Confidence Duality)
+#'
+#' Takes a test constructor function and returns the confidence set: the set
+#' of null values that are not rejected at level \eqn{\alpha}.
+#'
+#' @details
+#' Hypothesis tests and confidence sets are dual: a \eqn{(1-\alpha)}
+#' confidence set contains exactly those parameter values \eqn{\theta_0}
+#' for which the test of \eqn{H_0: \theta = \theta_0} would not reject at
+#' level \eqn{\alpha}. This function makes that duality operational.
+#'
+#' `invert_test` is the most general confidence set constructor in the
+#' package. Any test — including user-defined tests — can be inverted. The
+#' specialized [confint()] methods for `wald_test` and `z_test` give exact
+#' analytical intervals; `invert_test` gives numerical intervals for
+#' arbitrary tests at the cost of a grid search.
+#'
+#' @section Higher-Order Function (SICP Principle):
+#' This function takes a **function** as input (`test_fn`) and returns a
+#' structured result. It demonstrates the power of the `hypothesis_test`
+#' abstraction: because all tests implement the same interface (`pval()`),
+#' `invert_test` can work with any test without knowing its internals.
+#'
+#' @param test_fn A function that takes a single numeric argument (the
+#'   hypothesized null value) and returns a `hypothesis_test` object.
+#' @param grid Numeric vector of candidate null values to test.
+#' @param alpha Numeric. Significance level (default 0.05). The confidence
+#'   level is \eqn{1 - \alpha}.
+#'
+#' @return An S3 object of class `confidence_set` containing:
+#' \describe{
+#'   \item{set}{Numeric vector of non-rejected null values}
+#'   \item{alpha}{The significance level used}
+#'   \item{level}{The confidence level (\eqn{1 - \alpha})}
+#'   \item{test_fn}{The input test function}
+#'   \item{grid}{The input grid}
+#' }
+#'
+#' @examples
+#' # Invert a Wald test to get a confidence interval
+#' cs <- invert_test(
+#'   test_fn = function(theta) wald_test(estimate = 2.5, se = 0.8, null_value = theta),
+#'   grid = seq(0, 5, by = 0.01)
+#' )
+#' cs
+#' lower(cs)
+#' upper(cs)
+#'
+#' # Compare with the analytical confint (should agree up to grid resolution)
+#' confint(wald_test(estimate = 2.5, se = 0.8))
+#'
+#' # Invert ANY user-defined test — no special support needed
+#' my_test <- function(theta) {
+#'   stat <- (5.0 - theta)^2 / 2
+#'   hypothesis_test(stat = stat,
+#'     p.value = pchisq(stat, df = 1, lower.tail = FALSE), dof = 1)
+#' }
+#' invert_test(my_test, grid = seq(0, 10, by = 0.01))
+#'
+#' @seealso [confint.wald_test()], [confint.z_test()] for analytical CIs
+#' @export
+invert_test <- function(test_fn, grid, alpha = 0.05) {
+  pvals <- vapply(grid, function(theta) pval(test_fn(theta)), numeric(1))
+  non_rejected <- grid[pvals >= alpha]
+  structure(
+    list(
+      set = non_rejected,
+      alpha = alpha,
+      level = 1 - alpha,
+      test_fn = test_fn,
+      grid = grid
+    ),
+    class = "confidence_set"
+  )
+}
+
+#' @export
+print.confidence_set <- function(x, ...) {
+  cat(sprintf("Confidence set (%.0f%% level)\n", x$level * 100))
+  cat("-----------------------------\n")
+  if (length(x$set) == 0) {
+    cat("Empty set (all null values rejected)\n")
+  } else {
+    cat("Lower: ", min(x$set), "\n")
+    cat("Upper: ", max(x$set), "\n")
+    cat("Grid points in set: ", length(x$set), "of", length(x$grid), "\n")
+  }
+  invisible(x)
+}
+
+#' Extract the lower bound of a confidence set
+#' @param x a confidence_set object
+#' @param ... additional arguments (ignored)
+#' @return numeric lower bound
+#' @export
+lower <- function(x, ...) UseMethod("lower")
+
+#' @export
+lower.confidence_set <- function(x, ...) {
+  if (length(x$set) == 0) return(c(lower = NA_real_))
+  c(lower = min(x$set))
+}
+
+#' Extract the upper bound of a confidence set
+#' @param x a confidence_set object
+#' @param ... additional arguments (ignored)
+#' @return numeric upper bound
+#' @export
+upper <- function(x, ...) UseMethod("upper")
+
+#' @export
+upper.confidence_set <- function(x, ...) {
+  if (length(x$set) == 0) return(c(upper = NA_real_))
+  c(upper = max(x$set))
+}

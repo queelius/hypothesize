@@ -627,3 +627,91 @@ test_that("union_test composes with other operations", {
   ct <- complement_test(ut)
   expect_s3_class(ct, "complemented_test")
 })
+
+# =============================================================================
+# invert_test and confidence_set
+# =============================================================================
+
+test_that("invert_test returns a confidence_set", {
+  cs <- invert_test(
+    test_fn = function(theta) wald_test(estimate = 2.5, se = 0.8, null_value = theta),
+    grid = seq(0, 5, by = 0.01)
+  )
+  expect_s3_class(cs, "confidence_set")
+})
+
+test_that("invert_test matches confint.wald_test", {
+  est <- 2.5
+  se <- 0.8
+  cs <- invert_test(
+    test_fn = function(theta) wald_test(estimate = est, se = se, null_value = theta),
+    grid = seq(-1, 6, by = 0.001),
+    alpha = 0.05
+  )
+  w <- wald_test(estimate = est, se = se)
+  ci <- confint(w, level = 0.95)
+  expect_equal(lower(cs), ci["lower"], tolerance = 0.005)
+  expect_equal(upper(cs), ci["upper"], tolerance = 0.005)
+})
+
+test_that("invert_test matches confint.z_test", {
+  set.seed(42)
+  x <- rnorm(50, mean = 10, sd = 2)
+  sigma <- 2
+  cs <- invert_test(
+    test_fn = function(mu) z_test(x, mu0 = mu, sigma = sigma),
+    grid = seq(8, 12, by = 0.001),
+    alpha = 0.05
+  )
+  z <- z_test(x, mu0 = 0, sigma = sigma)
+  ci <- confint(z, level = 0.95)
+  expect_equal(lower(cs), ci["lower"], tolerance = 0.005)
+  expect_equal(upper(cs), ci["upper"], tolerance = 0.005)
+})
+
+test_that("invert_test works with user-defined test", {
+  # Custom test: reject if |x - theta| > 2
+  my_test <- function(theta) {
+    x <- 5.0
+    stat <- (x - theta)^2
+    hypothesis_test(stat = stat, p.value = if (abs(x - theta) > 2) 0.01 else 0.5, dof = 1)
+  }
+  cs <- invert_test(test_fn = my_test, grid = seq(0, 10, by = 0.1), alpha = 0.05)
+  expect_true(lower(cs) >= 2.9)
+  expect_true(upper(cs) <= 7.1)
+})
+
+test_that("confidence_set stores metadata", {
+  test_fn <- function(theta) wald_test(estimate = 1, se = 0.5, null_value = theta)
+  cs <- invert_test(test_fn = test_fn, grid = seq(-2, 4, by = 0.1), alpha = 0.10)
+  expect_equal(cs$alpha, 0.10)
+  expect_equal(cs$level, 0.90)
+  expect_true(length(cs$set) > 0)
+})
+
+test_that("lower and upper accessors work", {
+  cs <- invert_test(
+    test_fn = function(theta) wald_test(estimate = 5, se = 1, null_value = theta),
+    grid = seq(0, 10, by = 0.01)
+  )
+  expect_true(lower(cs) < 5)
+  expect_true(upper(cs) > 5)
+  expect_true(lower(cs) < upper(cs))
+})
+
+test_that("print.confidence_set produces output", {
+  cs <- invert_test(
+    test_fn = function(theta) wald_test(estimate = 5, se = 1, null_value = theta),
+    grid = seq(0, 10, by = 0.01)
+  )
+  expect_output(print(cs), "Confidence set")
+})
+
+test_that("invert_test returns empty set when all null values rejected", {
+  # Very precise estimate far from grid
+  cs <- invert_test(
+    test_fn = function(theta) wald_test(estimate = 100, se = 0.01, null_value = theta),
+    grid = seq(0, 5, by = 0.01)
+  )
+  expect_equal(length(cs$set), 0)
+})
