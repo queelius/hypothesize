@@ -1,3 +1,27 @@
+# hypothesize 0.11.0
+
+## New Features
+
+* `score_test()`: Score (Lagrange multiplier) test, completing the
+  Wald/LRT/Score trinity. Supports univariate and multivariate cases.
+* `complement_test()`: NOT operation — negates a test (p → 1-p). Connects
+  to equivalence testing.
+* `intersection_test()`: AND combinator — rejects when all component tests
+  reject. P-value = max(p_i).
+* `union_test()`: OR combinator — rejects when any component test rejects.
+  Implemented via De Morgan's law: NOT(AND(NOT(...))).
+* `invert_test()`: Test-confidence duality — inverts any test constructor
+  into a confidence set via grid search.
+* `lower()` and `upper()`: Generic accessors for confidence set bounds.
+* `wald_test()` now accepts a `vcov` matrix for multivariate testing.
+
+## Boolean Algebra
+
+The combination of `complement_test()`, `intersection_test()`, and
+`union_test()` forms a Boolean algebra over hypothesis tests. De Morgan's
+laws hold by construction: `union_test(a, b)` is literally defined as
+`complement_test(intersection_test(complement_test(a), complement_test(b)))`.
+
 # hypothesize 0.10.0
 
 ## New Features
