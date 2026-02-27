@@ -838,3 +838,58 @@ adjust_pval <- function(x, method = "bonferroni", n = NULL) {
     )
   }
 }
+
+#' Complement a Hypothesis Test (NOT)
+#'
+#' Negates a hypothesis test by transforming its p-value: \eqn{p \to 1 - p}.
+#' The complement test rejects when the original test fails to reject.
+#'
+#' @details
+#' The complement is the NOT operation in the Boolean algebra of hypothesis
+#' tests. Together with [intersection_test()] (AND) and [union_test()] (OR),
+#' it forms a complete algebra where De Morgan's laws hold by construction.
+#'
+#' @section Connection to Equivalence Testing:
+#' If the original test checks "is \eqn{\theta} different from
+#' \eqn{\theta_0}?" (rejecting when the difference is large), the
+#' complement checks "is \eqn{\theta} close to \eqn{\theta_0}?"
+#' (rejecting when the difference is small). This connects to the
+#' Two One-Sided Tests (TOST) procedure used in bioequivalence studies.
+#'
+#' @section Algebraic Properties:
+#' \itemize{
+#'   \item Double complement is identity:
+#'     `complement_test(complement_test(t))` has the same p-value as `t`
+#'   \item De Morgan's law:
+#'     `union_test(a, b) = complement_test(intersection_test(complement_test(a), complement_test(b)))`
+#' }
+#'
+#' @param test A `hypothesis_test` object.
+#'
+#' @return A `hypothesis_test` object with `"complemented_test"` prepended
+#'   to the class vector. The original class hierarchy is preserved.
+#' \describe{
+#'   \item{original_pval}{The pre-complement p-value}
+#'   \item{original_test}{The input test object}
+#' }
+#'
+#' @examples
+#' w <- wald_test(estimate = 3.0, se = 1.0)
+#' pval(w)                  # small
+#' pval(complement_test(w)) # large
+#'
+#' # Double complement recovers the original
+#' pval(complement_test(complement_test(w))) == pval(w)
+#'
+#' @seealso [intersection_test()], [union_test()]
+#' @export
+complement_test <- function(test) {
+  hypothesis_test(
+    stat = test_stat(test),
+    p.value = 1 - pval(test),
+    dof = dof(test),
+    superclasses = c("complemented_test", class(test)),
+    original_pval = pval(test),
+    original_test = test
+  )
+}

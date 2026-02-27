@@ -459,3 +459,52 @@ test_that("score_test multivariate with diagonal matches sum of univariates", {
   s_multi <- score_test(score = c(2.0, 3.0), fisher_info = diag(c(1.0, 2.0)))
   expect_equal(test_stat(s_multi), test_stat(s1) + test_stat(s2), tolerance = 1e-10)
 })
+
+# =============================================================================
+# complement_test (NOT)
+# =============================================================================
+
+test_that("complement_test inverts p-value", {
+  w <- wald_test(estimate = 2.0, se = 1.0)
+  c <- complement_test(w)
+  expect_equal(pval(c), 1 - pval(w))
+})
+
+test_that("complement_test preserves class hierarchy", {
+  w <- wald_test(estimate = 2.0, se = 1.0)
+  c <- complement_test(w)
+  expect_s3_class(c, "complemented_test")
+  expect_s3_class(c, "wald_test")
+  expect_s3_class(c, "hypothesis_test")
+})
+
+test_that("complement_test stores original p-value and test", {
+  w <- wald_test(estimate = 2.0, se = 1.0)
+  c <- complement_test(w)
+  expect_equal(c$original_pval, pval(w))
+  expect_identical(c$original_test, w)
+})
+
+test_that("double complement is identity", {
+  w <- wald_test(estimate = 2.0, se = 1.0)
+  cc <- complement_test(complement_test(w))
+  expect_equal(pval(cc), pval(w), tolerance = 1e-14)
+})
+
+test_that("complement_test preserves test statistic and dof", {
+  w <- wald_test(estimate = 2.0, se = 1.0)
+  c <- complement_test(w)
+  expect_equal(test_stat(c), test_stat(w))
+  expect_equal(dof(c), dof(w))
+})
+
+test_that("complement_test works with all test types", {
+  z <- z_test(rnorm(30, 1), mu0 = 0, sigma = 1)
+  l <- lrt(null_loglik = -100, alt_loglik = -95, dof = 2)
+  s <- score_test(score = 2.0, fisher_info = 1.0)
+  f <- fisher_combine(0.01, 0.05, 0.10)
+  expect_s3_class(complement_test(z), "complemented_test")
+  expect_s3_class(complement_test(l), "complemented_test")
+  expect_s3_class(complement_test(s), "complemented_test")
+  expect_s3_class(complement_test(f), "complemented_test")
+})
