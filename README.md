@@ -12,6 +12,12 @@ interface - **Closure Property**: Combining tests yields tests -
 ## Installation
 
 ``` r
+install.packages("hypothesize")
+```
+
+Or install the development version from GitHub:
+
+``` r
 # install.packages("devtools")
 devtools::install_github("queelius/hypothesize")
 ```
