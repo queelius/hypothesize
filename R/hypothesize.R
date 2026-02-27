@@ -893,3 +893,56 @@ complement_test <- function(test) {
     original_test = test
   )
 }
+
+#' Intersection Test (AND)
+#'
+#' Combines hypothesis tests using the AND rule: rejects only when ALL
+#' component tests reject.
+#'
+#' @details
+#' The p-value is \eqn{\max(p_1, \ldots, p_k)} — the intersection rejects
+#' at level \eqn{\alpha} if and only if every component p-value is below
+#' \eqn{\alpha}.
+#'
+#' This is the intersection-union test (IUT; Berger, 1982). No multiplicity
+#' correction is needed — the max is inherently conservative.
+#'
+#' @section Use Case --- Bioequivalence:
+#' Bioequivalence requires showing a drug's effect is both "not too low"
+#' AND "not too high". This is naturally an intersection test.
+#'
+#' @section Boolean Algebra:
+#' Together with [complement_test()] (NOT) and [union_test()] (OR), this
+#' forms a complete Boolean algebra. De Morgan's law holds by construction:
+#' `union_test(a, b) = complement_test(intersection_test(complement_test(a), complement_test(b)))`
+#'
+#' @param ... `hypothesis_test` objects or numeric p-values.
+#'
+#' @return A `hypothesis_test` of subclass `intersection_test` with fields
+#'   `n_tests` and `component_pvals`.
+#'
+#' @examples
+#' # All must reject for intersection to reject
+#' intersection_test(0.01, 0.03, 0.04)  # significant
+#' intersection_test(0.01, 0.80)         # not significant
+#'
+#' @seealso [union_test()], [complement_test()], [fisher_combine()]
+#' @export
+intersection_test <- function(...) {
+  inputs <- list(...)
+  pvals <- sapply(inputs, function(x) {
+    if (inherits(x, "hypothesis_test")) pval(x)
+    else if (is.numeric(x) && length(x) == 1) x
+    else stop("Arguments must be hypothesis_test objects or numeric p-values")
+  })
+  k <- length(pvals)
+  p.value <- max(pvals)
+  hypothesis_test(
+    stat = p.value,
+    p.value = p.value,
+    dof = k,
+    superclasses = "intersection_test",
+    n_tests = k,
+    component_pvals = pvals
+  )
+}

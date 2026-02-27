@@ -508,3 +508,55 @@ test_that("complement_test works with all test types", {
   expect_s3_class(complement_test(s), "complemented_test")
   expect_s3_class(complement_test(f), "complemented_test")
 })
+
+# =============================================================================
+# intersection_test (AND)
+# =============================================================================
+
+test_that("intersection_test p-value is max of component p-values", {
+  t1 <- wald_test(estimate = 2.0, se = 1.0)
+  t2 <- wald_test(estimate = 3.0, se = 1.0)
+  it <- intersection_test(t1, t2)
+  expect_equal(pval(it), max(pval(t1), pval(t2)))
+})
+
+test_that("intersection_test works with raw p-values", {
+  it <- intersection_test(0.01, 0.05, 0.10)
+  expect_equal(pval(it), 0.10)
+})
+
+test_that("intersection_test works with mixed inputs", {
+  w <- wald_test(estimate = 2.0, se = 1.0)
+  it <- intersection_test(w, 0.03)
+  expect_equal(pval(it), max(pval(w), 0.03))
+})
+
+test_that("intersection_test has correct class", {
+  it <- intersection_test(0.01, 0.05)
+  expect_s3_class(it, "intersection_test")
+  expect_s3_class(it, "hypothesis_test")
+})
+
+test_that("intersection_test stores metadata", {
+  it <- intersection_test(0.01, 0.05, 0.10)
+  expect_equal(it$n_tests, 3)
+  expect_equal(it$component_pvals, c(0.01, 0.05, 0.10))
+})
+
+test_that("intersection_test rejects only when ALL components reject", {
+  it <- intersection_test(0.01, 0.80)
+  expect_false(is_significant_at(it, 0.05))
+  it2 <- intersection_test(0.01, 0.02, 0.03)
+  expect_true(is_significant_at(it2, 0.05))
+})
+
+test_that("intersection_test composes with fisher_combine", {
+  it <- intersection_test(0.01, 0.02)
+  w <- wald_test(estimate = 2.0, se = 1.0)
+  combined <- fisher_combine(it, w)
+  expect_s3_class(combined, "fisher_combined_test")
+})
+
+test_that("intersection_test rejects bad inputs", {
+  expect_error(intersection_test("bad"), "must be")
+})
