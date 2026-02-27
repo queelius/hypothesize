@@ -946,3 +946,105 @@ intersection_test <- function(...) {
     component_pvals = pvals
   )
 }
+
+#' Union Test (OR via De Morgan's Law)
+#'
+#' Combines hypothesis tests using the OR rule: rejects when ANY component
+#' test rejects.
+#'
+#' @details
+#' The union test implements the OR operation in the Boolean algebra of
+#' hypothesis tests. It is defined via De Morgan's law:
+#'
+#' \deqn{\text{union}(t_1, \ldots, t_k) =
+#'   \text{NOT}(\text{AND}(\text{NOT}(t_1), \ldots, \text{NOT}(t_k)))}
+#'
+#' This is not an approximation --- it is the definition. The implementation
+#' is literally the De Morgan law applied to [complement_test()] and
+#' [intersection_test()].
+#'
+#' The resulting p-value is \eqn{\min(p_1, \ldots, p_k)}.
+#'
+#' @section Multiplicity Warning:
+#' The uncorrected \eqn{\min(p)} is anti-conservative when testing multiple
+#' hypotheses. If you need to control the family-wise error rate, apply
+#' [adjust_pval()] to the component tests before combining, or use
+#' [fisher_combine()] which pools evidence differently.
+#'
+#' The raw union test is appropriate when you genuinely want to reject a
+#' global null if any sub-hypothesis is false, without multiplicity
+#' correction --- for example, in screening or exploratory analysis.
+#'
+#' @section Boolean Algebra:
+#' Together with [intersection_test()] (AND) and [complement_test()] (NOT),
+#' this forms a complete Boolean algebra over hypothesis tests:
+#'
+#' \itemize{
+#'   \item AND: [intersection_test()] --- reject when all reject
+#'   \item OR: `union_test()` --- reject when any rejects
+#'   \item NOT: [complement_test()] --- reject when original fails to reject
+#' }
+#'
+#' De Morgan's laws hold by construction:
+#' \itemize{
+#'   \item `union(a, b) = NOT(AND(NOT(a), NOT(b)))`
+#'   \item `intersection(a, b) = NOT(OR(NOT(a), NOT(b)))`
+#' }
+#'
+#' @param ... `hypothesis_test` objects or numeric p-values to combine.
+#'
+#' @return A `hypothesis_test` object of subclass `union_test` containing:
+#' \describe{
+#'   \item{stat}{The minimum p-value (used as the test statistic)}
+#'   \item{p.value}{\eqn{\min(p_1, \ldots, p_k)}}
+#'   \item{dof}{Number of component tests}
+#'   \item{n_tests}{Number of tests combined}
+#'   \item{component_pvals}{Vector of individual p-values}
+#' }
+#'
+#' @examples
+#' # Screen three biomarkers: reject if ANY is significant
+#' t1 <- wald_test(estimate = 0.5, se = 0.3)
+#' t2 <- wald_test(estimate = 2.1, se = 0.8)
+#' t3 <- wald_test(estimate = 1.0, se = 0.4)
+#' union_test(t1, t2, t3)
+#'
+#' # De Morgan's law in action
+#' a <- wald_test(estimate = 2.0, se = 1.0)
+#' b <- wald_test(estimate = 1.5, se = 0.8)
+#' # These are equivalent:
+#' pval(union_test(a, b))
+#' pval(complement_test(intersection_test(complement_test(a), complement_test(b))))
+#'
+#' @seealso [intersection_test()] for AND, [complement_test()] for NOT,
+#'   [fisher_combine()] for evidence pooling
+#' @export
+union_test <- function(...) {
+  inputs <- list(...)
+
+  # Wrap raw p-values as hypothesis_test objects for complement_test
+  tests <- lapply(inputs, function(x) {
+    if (inherits(x, "hypothesis_test")) x
+    else if (is.numeric(x) && length(x) == 1)
+      hypothesis_test(stat = NA_real_, p.value = x, dof = NA_real_)
+    else stop("Arguments must be hypothesis_test objects or numeric p-values")
+  })
+
+  # De Morgan: OR(a, b, ...) = NOT(AND(NOT(a), NOT(b), ...))
+  result <- complement_test(
+    do.call(intersection_test, lapply(tests, complement_test))
+  )
+
+  # Extract component p-values for metadata
+  pvals <- sapply(tests, pval)
+
+  # Rewrap with union_test class and metadata
+  hypothesis_test(
+    stat = pval(result),
+    p.value = pval(result),
+    dof = length(pvals),
+    superclasses = "union_test",
+    n_tests = length(pvals),
+    component_pvals = pvals
+  )
+}

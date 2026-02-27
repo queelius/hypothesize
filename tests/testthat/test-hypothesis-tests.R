@@ -560,3 +560,70 @@ test_that("intersection_test composes with fisher_combine", {
 test_that("intersection_test rejects bad inputs", {
   expect_error(intersection_test("bad"), "must be")
 })
+
+# =============================================================================
+# union_test (OR via De Morgan)
+# =============================================================================
+
+test_that("union_test p-value is min of component p-values", {
+  t1 <- wald_test(estimate = 2.0, se = 1.0)
+  t2 <- wald_test(estimate = 0.5, se = 1.0)
+  ut <- union_test(t1, t2)
+  expect_equal(pval(ut), min(pval(t1), pval(t2)))
+})
+
+test_that("union_test works with raw p-values", {
+  ut <- union_test(0.80, 0.03, 0.50)
+  expect_equal(pval(ut), 0.03)
+})
+
+test_that("union_test has correct class", {
+  ut <- union_test(0.01, 0.05)
+  expect_s3_class(ut, "union_test")
+  expect_s3_class(ut, "hypothesis_test")
+})
+
+test_that("union_test stores metadata", {
+  ut <- union_test(0.01, 0.05, 0.10)
+  expect_equal(ut$n_tests, 3)
+  expect_equal(ut$component_pvals, c(0.01, 0.05, 0.10))
+})
+
+test_that("union_test rejects when ANY component rejects", {
+  ut <- union_test(0.80, 0.90, 0.01)
+  expect_true(is_significant_at(ut, 0.05))
+
+  ut2 <- union_test(0.80, 0.90, 0.60)
+  expect_false(is_significant_at(ut2, 0.05))
+})
+
+test_that("De Morgan: union = NOT(AND(NOT(a), NOT(b)))", {
+  p1 <- 0.03
+  p2 <- 0.15
+  p3 <- 0.07
+
+  # Direct union
+  ut <- union_test(p1, p2, p3)
+
+  # Manual De Morgan construction
+  tests <- list(
+    hypothesis_test(stat = 0, p.value = p1, dof = 1),
+    hypothesis_test(stat = 0, p.value = p2, dof = 1),
+    hypothesis_test(stat = 0, p.value = p3, dof = 1)
+  )
+  dm <- complement_test(
+    do.call(intersection_test, lapply(tests, complement_test))
+  )
+
+  expect_equal(pval(ut), pval(dm))
+})
+
+test_that("union_test composes with other operations", {
+  ut <- union_test(0.01, 0.05)
+  # Can be combined
+  combined <- fisher_combine(ut, 0.03)
+  expect_s3_class(combined, "fisher_combined_test")
+  # Can be complemented
+  ct <- complement_test(ut)
+  expect_s3_class(ct, "complemented_test")
+})
