@@ -363,25 +363,32 @@ z_test <- function(x, mu0 = 0, sigma, alternative = c("two.sided", "less", "grea
 #' Wald Test
 #'
 #' Computes the Wald test statistic and p-value for testing whether a
-#' parameter equals a hypothesized value.
+#' parameter (or parameter vector) equals a hypothesized value.
 #'
 #' @details
 #' The Wald test is a fundamental tool in statistical inference, used to test
 #' the null hypothesis \eqn{H_0: \theta = \theta_0} against the alternative
 #' \eqn{H_1: \theta \neq \theta_0}.
 #'
+#' **Univariate case** (when `se` is provided):
 #' The test is based on the asymptotic normality of maximum likelihood
 #' estimators. Under regularity conditions, if \eqn{\hat{\theta}} is the MLE
 #' with standard error \eqn{SE(\hat{\theta})}, then:
 #'
 #' \deqn{z = \frac{\hat{\theta} - \theta_0}{SE(\hat{\theta})} \sim N(0, 1)}
 #'
-#' The Wald statistic is typically reported as \eqn{W = z^2}, which follows
+#' The Wald statistic is reported as \eqn{W = z^2}, which follows
 #' a chi-squared distribution with 1 degree of freedom under \eqn{H_0}.
-#' This formulation generalizes naturally to multivariate parameters.
+#' The z-score is stored in the returned object for reference.
 #'
-#' The p-value is computed as \eqn{P(\chi^2_1 \geq W)}, giving a two-sided
-#' test. The z-score is stored in the returned object for reference.
+#' **Multivariate case** (when `vcov` is provided):
+#' For a \eqn{k}-dimensional parameter vector \eqn{\hat{\theta}} with
+#' variance-covariance matrix \eqn{\Sigma}, the Wald statistic is:
+#'
+#' \deqn{W = (\hat{\theta} - \theta_0)' \Sigma^{-1} (\hat{\theta} - \theta_0)
+#'   \sim \chi^2(k)}
+#'
+#' The p-value is computed as \eqn{P(\chi^2_k \geq W)}.
 #'
 #' @section Relationship to Other Tests:
 #' The Wald test is one of the "holy trinity" of likelihood-based tests,
@@ -390,24 +397,29 @@ z_test <- function(x, mu0 = 0, sigma, alternative = c("two.sided", "less", "grea
 #' can differ substantially in finite samples.
 #'
 #' @param estimate Numeric. The estimated parameter value \eqn{\hat{\theta}}.
-#' @param se Numeric. The standard error of the estimate, \eqn{SE(\hat{\theta})}.
+#'   A scalar for the univariate case or a vector for the multivariate case.
+#' @param se Numeric. Standard error of the estimate for the univariate case.
+#'   Mutually exclusive with `vcov`.
+#' @param vcov Numeric matrix. Variance-covariance matrix for the multivariate
+#'   case. Mutually exclusive with `se`.
 #' @param null_value Numeric. The hypothesized value \eqn{\theta_0} under the
-#'   null hypothesis. Default is 0.
+#'   null hypothesis. Default is 0. A scalar for the univariate case or a
+#'   vector of the same length as `estimate` for the multivariate case.
 #'
 #' @return A `hypothesis_test` object of subclass `wald_test` containing:
 #' \describe{
-#'   \item{stat}{The Wald statistic \eqn{W = z^2}}
-#'   \item{p.value}{Two-sided p-value from chi-squared(1) distribution}
-#'   \item{dof}{Degrees of freedom (always 1 for univariate Wald test)}
-#'   \item{z}{The z-score \eqn{(\hat{\theta} - \theta_0) / SE}}
+#'   \item{stat}{The Wald statistic \eqn{W}}
+#'   \item{p.value}{Two-sided p-value from chi-squared distribution}
+#'   \item{dof}{Degrees of freedom (1 for univariate, \eqn{k} for multivariate)}
+#'   \item{z}{The z-score (univariate case only)}
 #'   \item{estimate}{The input estimate}
-#'   \item{se}{The input standard error}
+#'   \item{se}{The input standard error (univariate case only)}
+#'   \item{vcov}{The input variance-covariance matrix (multivariate case only)}
 #'   \item{null_value}{The input null hypothesis value}
 #' }
 #'
 #' @examples
-#' # Test whether a regression coefficient differs from zero
-#' # Suppose we estimated beta = 2.5 with SE = 0.8
+#' # Univariate: test whether a regression coefficient differs from zero
 #' w <- wald_test(estimate = 2.5, se = 0.8, null_value = 0)
 #' w
 #'
@@ -418,26 +430,56 @@ z_test <- function(x, mu0 = 0, sigma, alternative = c("two.sided", "less", "grea
 #' is_significant_at(w, 0.05)
 #'
 #' # Test against a non-zero null
-#' # H0: theta = 2 vs H1: theta != 2
 #' wald_test(estimate = 2.5, se = 0.8, null_value = 2)
+#'
+#' # Multivariate: test two parameters jointly
+#' est <- c(2.0, 3.0)
+#' V <- matrix(c(1.0, 0.3, 0.3, 1.0), 2, 2)
+#' w_mv <- wald_test(estimate = est, vcov = V, null_value = c(0, 0))
+#' test_stat(w_mv)
+#' dof(w_mv)           # 2
+#' pval(w_mv)
 #'
 #' @seealso [lrt()] for likelihood ratio tests, [z_test()] for testing means
 #' @importFrom stats pchisq pnorm
 #' @export
-wald_test <- function(estimate, se, null_value = 0) {
-  z <- (estimate - null_value) / se
-  stat <- z^2
-  p.value <- pchisq(stat, df = 1, lower.tail = FALSE)
-  hypothesis_test(
-    stat = stat,
-    p.value = p.value,
-    dof = 1,
-    superclasses = "wald_test",
-    z = z,
-    estimate = estimate,
-    se = se,
-    null_value = null_value
-  )
+wald_test <- function(estimate, se = NULL, vcov = NULL, null_value = 0) {
+  if (!is.null(se) && !is.null(vcov))
+    stop("Specify exactly one of 'se' (univariate) or 'vcov' (multivariate)")
+  if (is.null(se) && is.null(vcov))
+    stop("Specify exactly one of 'se' (univariate) or 'vcov' (multivariate)")
+
+  if (!is.null(vcov)) {
+    # Multivariate: W = (theta - theta0)' V^{-1} (theta - theta0) ~ chi-sq(k)
+    diff <- estimate - null_value
+    k <- length(estimate)
+    stat <- as.numeric(t(diff) %*% solve(vcov) %*% diff)
+    p.value <- pchisq(stat, df = k, lower.tail = FALSE)
+    hypothesis_test(
+      stat = stat,
+      p.value = p.value,
+      dof = k,
+      superclasses = "wald_test",
+      estimate = estimate,
+      vcov = vcov,
+      null_value = null_value
+    )
+  } else {
+    # Univariate: W = z^2 ~ chi-sq(1)
+    z <- (estimate - null_value) / se
+    stat <- z^2
+    p.value <- pchisq(stat, df = 1, lower.tail = FALSE)
+    hypothesis_test(
+      stat = stat,
+      p.value = p.value,
+      dof = 1,
+      superclasses = "wald_test",
+      z = z,
+      estimate = estimate,
+      se = se,
+      null_value = null_value
+    )
+  }
 }
 
 #' Score Test (Lagrange Multiplier Test)

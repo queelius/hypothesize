@@ -715,3 +715,53 @@ test_that("invert_test returns empty set when all null values rejected", {
   )
   expect_equal(length(cs$set), 0)
 })
+
+# =============================================================================
+# wald_test multivariate extension
+# =============================================================================
+
+test_that("multivariate wald_test computes correct statistic", {
+  est <- c(2.0, 3.0)
+  V <- matrix(c(1.0, 0.3, 0.3, 1.0), 2, 2)
+  null <- c(0, 0)
+  w <- wald_test(estimate = est, vcov = V, null_value = null)
+
+  diff <- est - null
+  expected_stat <- as.numeric(t(diff) %*% solve(V) %*% diff)
+  expect_equal(test_stat(w), expected_stat)
+  expect_equal(dof(w), 2)
+  expect_equal(pval(w), pchisq(expected_stat, df = 2, lower.tail = FALSE))
+})
+
+test_that("multivariate wald_test with diagonal vcov matches sum of univariates", {
+  est <- c(2.0, 3.0)
+  se1 <- 0.8
+  se2 <- 1.2
+  V <- diag(c(se1^2, se2^2))
+
+  w_multi <- wald_test(estimate = est, vcov = V)
+  w1 <- wald_test(estimate = est[1], se = se1)
+  w2 <- wald_test(estimate = est[2], se = se2)
+
+  expect_equal(test_stat(w_multi), test_stat(w1) + test_stat(w2),
+               tolerance = 1e-10)
+})
+
+test_that("univariate wald_test still works unchanged", {
+  w <- wald_test(estimate = 2.5, se = 0.8)
+  expect_equal(test_stat(w), (2.5 / 0.8)^2)
+  expect_equal(dof(w), 1)
+  expect_true(!is.null(w$z))
+})
+
+test_that("multivariate wald_test has correct class", {
+  V <- diag(c(1, 1))
+  w <- wald_test(estimate = c(1, 2), vcov = V)
+  expect_s3_class(w, "wald_test")
+  expect_s3_class(w, "hypothesis_test")
+})
+
+test_that("wald_test rejects se and vcov together", {
+  expect_error(wald_test(estimate = 1, se = 0.5, vcov = matrix(1)),
+               "exactly one")
+})

@@ -4,49 +4,63 @@
 \alias{wald_test}
 \title{Wald Test}
 \usage{
-wald_test(estimate, se, null_value = 0)
+wald_test(estimate, se = NULL, vcov = NULL, null_value = 0)
 }
 \arguments{
-\item{estimate}{Numeric. The estimated parameter value \eqn{\hat{\theta}}.}
+\item{estimate}{Numeric. The estimated parameter value \eqn{\hat{\theta}}.
+A scalar for the univariate case or a vector for the multivariate case.}
 
-\item{se}{Numeric. The standard error of the estimate, \eqn{SE(\hat{\theta})}.}
+\item{se}{Numeric. Standard error of the estimate for the univariate case.
+Mutually exclusive with \code{vcov}.}
+
+\item{vcov}{Numeric matrix. Variance-covariance matrix for the multivariate
+case. Mutually exclusive with \code{se}.}
 
 \item{null_value}{Numeric. The hypothesized value \eqn{\theta_0} under the
-null hypothesis. Default is 0.}
+null hypothesis. Default is 0. A scalar for the univariate case or a
+vector of the same length as \code{estimate} for the multivariate case.}
 }
 \value{
 A \code{hypothesis_test} object of subclass \code{wald_test} containing:
 \describe{
-\item{stat}{The Wald statistic \eqn{W = z^2}}
-\item{p.value}{Two-sided p-value from chi-squared(1) distribution}
-\item{dof}{Degrees of freedom (always 1 for univariate Wald test)}
-\item{z}{The z-score \eqn{(\hat{\theta} - \theta_0) / SE}}
+\item{stat}{The Wald statistic \eqn{W}}
+\item{p.value}{Two-sided p-value from chi-squared distribution}
+\item{dof}{Degrees of freedom (1 for univariate, \eqn{k} for multivariate)}
+\item{z}{The z-score (univariate case only)}
 \item{estimate}{The input estimate}
-\item{se}{The input standard error}
+\item{se}{The input standard error (univariate case only)}
+\item{vcov}{The input variance-covariance matrix (multivariate case only)}
 \item{null_value}{The input null hypothesis value}
 }
 }
 \description{
 Computes the Wald test statistic and p-value for testing whether a
-parameter equals a hypothesized value.
+parameter (or parameter vector) equals a hypothesized value.
 }
 \details{
 The Wald test is a fundamental tool in statistical inference, used to test
 the null hypothesis \eqn{H_0: \theta = \theta_0} against the alternative
 \eqn{H_1: \theta \neq \theta_0}.
 
+\strong{Univariate case} (when \code{se} is provided):
 The test is based on the asymptotic normality of maximum likelihood
 estimators. Under regularity conditions, if \eqn{\hat{\theta}} is the MLE
 with standard error \eqn{SE(\hat{\theta})}, then:
 
 \deqn{z = \frac{\hat{\theta} - \theta_0}{SE(\hat{\theta})} \sim N(0, 1)}
 
-The Wald statistic is typically reported as \eqn{W = z^2}, which follows
+The Wald statistic is reported as \eqn{W = z^2}, which follows
 a chi-squared distribution with 1 degree of freedom under \eqn{H_0}.
-This formulation generalizes naturally to multivariate parameters.
+The z-score is stored in the returned object for reference.
 
-The p-value is computed as \eqn{P(\chi^2_1 \geq W)}, giving a two-sided
-test. The z-score is stored in the returned object for reference.
+\strong{Multivariate case} (when \code{vcov} is provided):
+For a \eqn{k}-dimensional parameter vector \eqn{\hat{\theta}} with
+variance-covariance matrix \eqn{\Sigma}, the Wald statistic is:
+
+\deqn{W = (\hat{\theta} - \theta_0)' \Sigma^{-1} (\hat{\theta} - \theta_0)
+  \sim \chi^2(k)}
+
+The p-value is computed as \eqn{P(\chi^2_k \geq W)}.
 }
 \section{Relationship to Other Tests}{
 
@@ -57,8 +71,7 @@ can differ substantially in finite samples.
 }
 
 \examples{
-# Test whether a regression coefficient differs from zero
-# Suppose we estimated beta = 2.5 with SE = 0.8
+# Univariate: test whether a regression coefficient differs from zero
 w <- wald_test(estimate = 2.5, se = 0.8, null_value = 0)
 w
 
@@ -69,8 +82,15 @@ pval(w)             # p-value
 is_significant_at(w, 0.05)
 
 # Test against a non-zero null
-# H0: theta = 2 vs H1: theta != 2
 wald_test(estimate = 2.5, se = 0.8, null_value = 2)
+
+# Multivariate: test two parameters jointly
+est <- c(2.0, 3.0)
+V <- matrix(c(1.0, 0.3, 0.3, 1.0), 2, 2)
+w_mv <- wald_test(estimate = est, vcov = V, null_value = c(0, 0))
+test_stat(w_mv)
+dof(w_mv)           # 2
+pval(w_mv)
 
 }
 \seealso{
