@@ -261,11 +261,13 @@ hypothesis testing:
 | Function | Purpose | SICP Principle |
 |----------|---------|----------------|
 | `hypothesis_test()` | Base constructor | Data abstraction |
-| `z_test()`, `wald_test()`, `lrt()` | Primitive tests | Building blocks |
+| `z_test()`, `wald_test()`, `lrt()`, `score_test()` | Primitive tests | Building blocks |
 | `pval()`, `test_stat()`, `dof()` | Accessors | Abstraction barrier |
 | `fisher_combine()` | Combine tests | Closure property |
-| `adjust_pval()` | Transform tests | Higher-order functions |
-| `confint()` | Extract CI | Duality |
+| `intersection_test()`, `union_test()` | Boolean AND/OR | Closure property |
+| `adjust_pval()`, `complement_test()` | Transform tests | Higher-order functions |
+| `confint()`, `invert_test()` | Extract CI / confidence set | Duality |
 
 This design makes hypothesis testing composable, extensible, and easy to reason
-about.
+about. See `vignette("boolean-algebra")` for the full Boolean algebra of
+hypothesis tests, De Morgan's laws, and the test-confidence duality.

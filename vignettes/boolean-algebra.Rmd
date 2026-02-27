@@ -1,0 +1,346 @@
+---
+title: "Boolean Algebra of Hypothesis Tests"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Boolean Algebra of Hypothesis Tests}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(hypothesize)
+```
+
+## The Idea
+
+What if hypothesis tests formed an algebra?
+
+In SICP terms, we want three things: **primitive expressions** (the tests
+themselves), **means of combination** (ways to build compound tests from
+simpler ones), and **means of abstraction** (ways to transform and
+generalize tests). The `hypothesize` package provides all three, and in
+v0.11.0, the combinators form a genuine Boolean algebra.
+
+This vignette develops the algebra from first principles.
+
+## The Trinity: Three Ways to Test a Hypothesis
+
+Statistical theory gives us three fundamental likelihood-based tests. They
+approach the same question from different angles and are asymptotically
+equivalent, but each requires different information:
+
+| Test | What it needs | When to use |
+|------|---------------|-------------|
+| **Wald** | MLE + standard error | You already fit the full model |
+| **LRT** | Log-likelihoods of both models | You can fit both models |
+| **Score** | Score + Fisher info at null only | The null model is cheap, the alternative is expensive |
+
+The score test completes the trinity:
+
+```{r}
+# Setup: testing whether a Poisson rate equals 5
+# Observed: 60 events in 10 time units
+# MLE: lambda_hat = 6, se = sqrt(6/10)
+
+# Wald: evaluate at the MLE
+w <- wald_test(estimate = 6, se = sqrt(6/10), null_value = 5)
+
+# Score: evaluate at the null
+# Score function at lambda0=5: n*xbar/lambda0 - n = 60/5 - 10 = 2
+# Fisher info at lambda0=5: n/lambda0 = 10/5 = 2
+s <- score_test(score = 2, fisher_info = 2)
+
+# LRT: evaluate at both
+# loglik(lambda) = sum(x)*log(lambda) - n*lambda
+ll_null <- 60 * log(5) - 10 * 5
+ll_alt  <- 60 * log(6) - 10 * 6
+l <- lrt(null_loglik = ll_null, alt_loglik = ll_alt, dof = 1)
+
+# All three give similar (not identical) answers:
+data.frame(
+  test = c("Wald", "Score", "LRT"),
+  statistic = c(test_stat(w), test_stat(s), test_stat(l)),
+  p_value = round(c(pval(w), pval(s), pval(l)), 4)
+)
+```
+
+The three tests agree asymptotically but can diverge in finite samples.
+This is expected and well-understood — the choice between them depends
+on what information is available, not which gives the "right" answer.
+
+## Boolean Algebra: AND, OR, NOT
+
+The heart of v0.11.0 is a Boolean algebra over hypothesis tests. Just as
+propositional logic has AND, OR, and NOT, we can combine tests with the
+same operations.
+
+### NOT: The Complement
+
+The complement of a test rejects when the original *fails* to reject:
+
+```{r}
+# A significant Wald test
+w <- wald_test(estimate = 3.0, se = 1.0)
+pval(w)                    # small — rejects H0
+
+# Its complement
+cw <- complement_test(w)
+pval(cw)                   # large — fails to reject
+```
+
+The algebra is clean: double complement is identity.
+
+```{r}
+pval(complement_test(complement_test(w)))
+pval(w)
+```
+
+And the class hierarchy is preserved — a complemented Wald test is
+simultaneously a `complemented_test`, a `wald_test`, and a
+`hypothesis_test`:
+
+```{r}
+class(cw)
+```
+
+**Connection to equivalence testing.** If a Wald test asks "is the
+parameter different from the null?", its complement asks "is the parameter
+*close to* the null?" This is exactly the logic of equivalence testing.
+In bioequivalence studies, you don't want to show a drug is *different* —
+you want to show it's *the same* (within tolerance).
+
+### AND: The Intersection
+
+The intersection test rejects only when *all* component tests reject:
+
+```{r}
+# Both must be significant
+intersection_test(0.01, 0.03)          # both < 0.05
+is_significant_at(intersection_test(0.01, 0.03), 0.05)
+
+# One non-significant component blocks rejection
+intersection_test(0.01, 0.80)
+is_significant_at(intersection_test(0.01, 0.80), 0.05)
+```
+
+The p-value is simply $\max(p_1, \ldots, p_k)$ — the intersection rejects
+at level $\alpha$ if and only if every component rejects, which happens if
+and only if the largest p-value is below $\alpha$.
+
+This is the intersection-union test (IUT; Berger, 1982). No multiplicity
+correction is needed — the max operation is inherently conservative.
+
+**Use case: bioequivalence.** Bioequivalence requires showing a drug's
+effect is both "not too low" AND "not too high":
+
+```{r}
+# Drug effect estimate: 1.05, with SE = 0.08
+# Must show: effect > 0.8 AND effect < 1.25
+t_lower <- wald_test(estimate = 1.05, se = 0.08, null_value = 0.8)
+t_upper <- wald_test(estimate = 1.05, se = 0.08, null_value = 1.25)
+
+bioequiv <- intersection_test(t_lower, t_upper)
+is_significant_at(bioequiv, 0.05)
+```
+
+### OR: The Union (via De Morgan)
+
+The union test rejects when *any* component test rejects. But here's the
+beautiful part: we don't implement it directly. Instead, we *define* it
+through De Morgan's law:
+
+$$\text{OR}(t_1, \ldots, t_k) = \text{NOT}(\text{AND}(\text{NOT}(t_1), \ldots, \text{NOT}(t_k)))$$
+
+The implementation IS the theorem:
+
+```{r, eval=FALSE}
+# This is (essentially) the actual source code of union_test:
+union_test <- function(...) {
+  complement_test(
+    do.call(intersection_test, lapply(tests, complement_test))
+  )
+}
+```
+
+Let's verify De Morgan's law holds:
+
+```{r}
+# Three p-values
+p1 <- 0.03; p2 <- 0.15; p3 <- 0.07
+
+# Direct union
+ut <- union_test(p1, p2, p3)
+
+# Manual De Morgan construction
+tests <- list(
+  hypothesis_test(stat = 0, p.value = p1, dof = 1),
+  hypothesis_test(stat = 0, p.value = p2, dof = 1),
+  hypothesis_test(stat = 0, p.value = p3, dof = 1)
+)
+dm <- complement_test(
+  do.call(intersection_test, lapply(tests, complement_test))
+)
+
+# Identical
+c(union = pval(ut), de_morgan = pval(dm))
+```
+
+The resulting p-value is $\min(p_1, \ldots, p_k)$. This falls out
+algebraically: complement maps $p \to 1-p$, the intersection takes the
+max, and the outer complement maps back. So:
+
+$$1 - \max(1-p_1, \ldots, 1-p_k) = \min(p_1, \ldots, p_k)$$
+
+**A note on multiplicity.** The uncorrected $\min(p)$ is anti-conservative.
+If you need to control the family-wise error rate, apply `adjust_pval()`
+to the component tests before combining. The raw union test is appropriate
+for screening or exploratory analysis where you want to detect *any*
+signal.
+
+### The Full Algebra
+
+The three operations satisfy the axioms of a Boolean algebra:
+
+| Property | Statement |
+|----------|-----------|
+| Involution | `complement(complement(t)) = t` |
+| De Morgan 1 | `union(a, b) = complement(intersection(complement(a), complement(b)))` |
+| De Morgan 2 | `intersection(a, b) = complement(union(complement(a), complement(b)))` |
+
+And they compose with the rest of the package — intersection and union
+tests are `hypothesis_test` objects, so they work with `fisher_combine()`,
+`adjust_pval()`, `pval()`, and everything else:
+
+```{r}
+# Compose: take the union, then combine with another test
+ut <- union_test(0.01, 0.05)
+combined <- fisher_combine(ut, wald_test(estimate = 2, se = 1))
+pval(combined)
+```
+
+## Test-Confidence Duality
+
+There is a deep connection between hypothesis tests and confidence
+intervals: a $(1-\alpha)$ confidence set contains exactly those null values
+that would *not* be rejected at level $\alpha$. The `invert_test()`
+function makes this duality operational.
+
+It takes a test constructor — any function that maps a null value to a
+`hypothesis_test` — and returns the set of non-rejected values:
+
+```{r}
+# Invert a Wald test into a confidence interval
+cs <- invert_test(
+  test_fn = function(theta) wald_test(estimate = 2.5, se = 0.8, null_value = theta),
+  grid = seq(0, 5, by = 0.01)
+)
+cs
+```
+
+This agrees with the analytical confidence interval (up to grid
+resolution):
+
+```{r}
+# Analytical CI from the Wald test
+confint(wald_test(estimate = 2.5, se = 0.8))
+
+# Numerical CI from test inversion
+c(lower = lower(cs), upper = upper(cs))
+```
+
+The power of `invert_test()` is generality. The analytical `confint()`
+methods only work for specific test types (Wald, z-test). But `invert_test()`
+works with *any* test — including user-defined ones:
+
+```{r}
+# A custom test: reject if |observation - theta| > 2
+# (This has no analytical CI, but invert_test handles it)
+my_test <- function(theta) {
+  obs <- 5.0
+  hypothesis_test(
+    stat = (obs - theta)^2,
+    p.value = if (abs(obs - theta) > 2) 0.01 else 0.5,
+    dof = 1
+  )
+}
+
+cs <- invert_test(my_test, grid = seq(0, 10, by = 0.1))
+c(lower = lower(cs), upper = upper(cs))
+```
+
+This is the most SICP function in the package. It takes a *function* as
+input (the test constructor) and returns a structured result (the confidence
+set). It works because of the abstraction barrier: `invert_test()` only
+needs `pval()`, so any test that implements the `hypothesis_test` interface
+gets confidence sets for free.
+
+## Multivariate Tests
+
+Both `wald_test()` and `score_test()` are polymorphic — they accept scalar
+or vector inputs and dispatch accordingly.
+
+The multivariate Wald test uses the quadratic form:
+
+$$W = (\hat\theta - \theta_0)^\top \Sigma^{-1} (\hat\theta - \theta_0) \sim \chi^2_k$$
+
+```{r}
+# Test two parameters jointly
+est <- c(2.0, 3.0)
+V <- matrix(c(1.0, 0.3, 0.3, 1.0), 2, 2)  # correlated
+
+w_joint <- wald_test(estimate = est, vcov = V, null_value = c(0, 0))
+w_joint
+```
+
+When parameters are independent (diagonal covariance), the multivariate
+statistic decomposes into a sum of univariate statistics:
+
+```{r}
+# Independent parameters: diagonal vcov
+se1 <- 0.8; se2 <- 1.2
+V_diag <- diag(c(se1^2, se2^2))
+
+w_multi <- wald_test(estimate = c(2.0, 3.0), vcov = V_diag)
+w1 <- wald_test(estimate = 2.0, se = se1)
+w2 <- wald_test(estimate = 3.0, se = se2)
+
+# The joint statistic equals the sum of individual statistics
+c(joint = test_stat(w_multi), sum = test_stat(w1) + test_stat(w2))
+```
+
+This decomposition breaks down when parameters are correlated — that's
+when you need the full `vcov` matrix. The off-diagonal entries capture the
+dependence structure that individual standard errors miss.
+
+## The Design as an Algebra
+
+Stepping back, the package implements a small algebra with clear structure:
+
+```
+Primitives:     z_test, wald_test, lrt, score_test
+Combinators:    fisher_combine, intersection_test, union_test
+Transformers:   adjust_pval, complement_test
+Duality:        invert_test, confint
+Accessors:      pval, test_stat, dof, is_significant_at, lower, upper
+```
+
+Each layer corresponds to an SICP principle:
+
+| Layer | SICP Principle | What it does |
+|-------|----------------|--------------|
+| Primitives | Primitive expressions | The four ways to test a hypothesis |
+| Combinators | Means of combination | Build compound tests (closure property) |
+| Transformers | Means of abstraction | Transform tests into new tests |
+| Duality | Power of the abstraction barrier | Any test becomes a confidence set |
+
+The package has 18 exported functions. That's deliberately small. The goal
+is not to provide every test, but to provide the algebraic primitives from
+which users can compose arbitrary test logic. A well-chosen basis is more
+powerful than an exhaustive catalog.
