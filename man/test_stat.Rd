@@ -2,9 +2,12 @@
 % Please edit documentation in R/hypothesize.R
 \name{test_stat}
 \alias{test_stat}
-\title{Generic method for extracting the test statistic from a hypothesis test}
+\alias{test_stat.hypothesis_test}
+\title{Extract the test statistic from a hypothesis test}
 \usage{
 test_stat(x, ...)
+
+\method{test_stat}{hypothesis_test}(x, ...)
 }
 \arguments{
 \item{x}{a hypothesis test object}
@@ -12,8 +15,12 @@ test_stat(x, ...)
 \item{...}{additional arguments to pass into the method}
 }
 \value{
-test statistic
+Numeric test statistic.
 }
 \description{
-Generic method for extracting the test statistic from a hypothesis test
+Extract the test statistic from a hypothesis test
+}
+\examples{
+w <- wald_test(estimate = 2.5, se = 0.8)
+test_stat(w)
 }

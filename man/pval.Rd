@@ -2,9 +2,12 @@
 % Please edit documentation in R/hypothesize.R
 \name{pval}
 \alias{pval}
-\title{Generic method for extracting the p-value from a hypothesis test}
+\alias{pval.hypothesis_test}
+\title{Extract the p-value from a hypothesis test}
 \usage{
 pval(x, ...)
+
+\method{pval}{hypothesis_test}(x, ...)
 }
 \arguments{
 \item{x}{a hypothesis test object}
@@ -12,8 +15,12 @@ pval(x, ...)
 \item{...}{additional arguments to pass into the method}
 }
 \value{
-p-value
+Numeric p-value.
 }
 \description{
-Generic method for extracting the p-value from a hypothesis test
+Extract the p-value from a hypothesis test
+}
+\examples{
+w <- wald_test(estimate = 2.5, se = 0.8)
+pval(w)
 }

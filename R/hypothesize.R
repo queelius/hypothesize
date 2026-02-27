@@ -1,3 +1,6 @@
+#' @keywords internal
+"_PACKAGE"
+
 #' Create a Hypothesis Test Object
 #'
 #' Constructs a hypothesis test object that implements the `hypothesize` API.
@@ -94,81 +97,76 @@ print.hypothesis_test <- function(x, ...) {
   invisible(x)
 }
 
-#' Generic method for extracting the p-value from a hypothesis test
+#' Extract the p-value from a hypothesis test
 #' @param x a hypothesis test object
 #' @param ... additional arguments to pass into the method
-#' @return p-value
+#' @return Numeric p-value.
+#' @examples
+#' w <- wald_test(estimate = 2.5, se = 0.8)
+#' pval(w)
 #' @export
 pval <- function(x, ...) {
   UseMethod("pval")
 }
 
-#' p-value method for hypothesis tests
-#'
-#' @param x a hypothesis test
-#' @param ... additional arguments
-#' @return p-value
+#' @rdname pval
 #' @export
 pval.hypothesis_test <- function(x, ...) {
   x$p.value
 }
 
-#' Generic method for extracting the degrees of freedom from a hypothesis test
+#' Extract the degrees of freedom from a hypothesis test
 #' @param x a hypothesis test object
 #' @param ... additional arguments to pass into the method
-#' @return degrees of freedom
+#' @return Numeric degrees of freedom.
+#' @examples
+#' w <- wald_test(estimate = 2.5, se = 0.8)
+#' dof(w)
 #' @export
 dof <- function(x, ...) {
   UseMethod("dof")
 }
 
-#' Degrees of freedom method for hypothesis tests
-#' @param x a hypothesis test
-#' @param ... additional arguments
-#' @return degrees of freedom
+#' @rdname dof
 #' @export
 dof.hypothesis_test <- function(x, ...) {
   x$dof
 }
 
-#' Generic method for extracting the test statistic from a hypothesis test
+#' Extract the test statistic from a hypothesis test
 #' @param x a hypothesis test object
 #' @param ... additional arguments to pass into the method
-#' @return test statistic
+#' @return Numeric test statistic.
+#' @examples
+#' w <- wald_test(estimate = 2.5, se = 0.8)
+#' test_stat(w)
 #' @export
 test_stat <- function(x, ...) {
   UseMethod("test_stat")
 }
 
-#' Test statistic method for hypothesis tests
-#' @param x a hypothesis test
-#' @param ... additional arguments
-#' @return test statistic
+#' @rdname test_stat
 #' @export
 test_stat.hypothesis_test <- function(x, ...) {
   x$stat
 }
 
 
-#' Generic method for checking if a hypothesis test is significant at a given
-#' significance level.
+#' Check if a hypothesis test is significant at a given level
 #' @param x a hypothesis test object
 #' @param alpha significance level
 #' @param ... additional arguments passed to methods
-#' @return logical indicating whether the test is significant at the given
-#' significance level alpha (e.g., 0.05) or not.
+#' @return Logical indicating whether the test is significant at level
+#'   `alpha`.
+#' @examples
+#' w <- wald_test(estimate = 2.5, se = 0.8)
+#' is_significant_at(w, 0.05)
 #' @export
 is_significant_at <- function(x, alpha, ...) {
   UseMethod("is_significant_at")
 }
 
-#' Significance test for the hypothesis_test class.
-#'
-#' @param x a hypothesis test object
-#' @param alpha significance level
-#' @param ... additional arguments (ignored)
-#' @return logical indicating whether the test is significant at the given
-#' significance level alpha (e.g., 0.05) or not.
+#' @rdname is_significant_at
 #' @export
 is_significant_at.hypothesis_test <- function(x, alpha, ...) {
   pval(x) < alpha
@@ -522,7 +520,15 @@ wald_test <- function(estimate, se = NULL, vcov = NULL, null_value = 0) {
 #' @param null_value Optional. The null hypothesis value, stored for
 #'   reference but not used in computation.
 #'
-#' @return A `hypothesis_test` object of subclass `score_test`.
+#' @return A `hypothesis_test` object of subclass `score_test` containing:
+#' \describe{
+#'   \item{stat}{The score statistic \eqn{S}}
+#'   \item{p.value}{P-value from chi-squared distribution}
+#'   \item{dof}{Degrees of freedom (1 for univariate, \eqn{k} for multivariate)}
+#'   \item{score}{The input score value(s)}
+#'   \item{fisher_info}{The input Fisher information}
+#'   \item{null_value}{The input null hypothesis value (if provided)}
+#' }
 #'
 #' @examples
 #' # Univariate score test
@@ -637,7 +643,7 @@ fisher_combine <- function(...) {
   inputs <- list(...)
 
   # Extract p-values from hypothesis_test objects or use raw numerics
-  pvals <- sapply(inputs, function(x) {
+  pvals <- vapply(inputs, function(x) {
     if (inherits(x, "hypothesis_test")) {
       pval(x)
     } else if (is.numeric(x) && length(x) == 1) {
@@ -645,7 +651,7 @@ fisher_combine <- function(...) {
     } else {
       stop("Arguments must be hypothesis_test objects or numeric p-values")
     }
-  })
+  }, numeric(1))
 
   # Validate p-values
   if (any(pvals <= 0 | pvals > 1)) {
@@ -846,7 +852,7 @@ adjust_pval <- function(x, method = "bonferroni", n = NULL) {
 
   if (is.list(x) && !inherits(x, "hypothesis_test")) {
     if (is.null(n)) n <- length(x)
-    pvals <- sapply(x, pval)
+    pvals <- vapply(x, pval, numeric(1))
     adjusted_pvals <- p.adjust(pvals, method = method, n = n)
 
     mapply(function(test, adj_p, orig_p) {
@@ -972,11 +978,11 @@ complement_test <- function(test) {
 #' @export
 intersection_test <- function(...) {
   inputs <- list(...)
-  pvals <- sapply(inputs, function(x) {
+  pvals <- vapply(inputs, function(x) {
     if (inherits(x, "hypothesis_test")) pval(x)
     else if (is.numeric(x) && length(x) == 1) x
     else stop("Arguments must be hypothesis_test objects or numeric p-values")
-  })
+  }, numeric(1))
   k <- length(pvals)
   p.value <- max(pvals)
   hypothesis_test(
@@ -1078,7 +1084,7 @@ union_test <- function(...) {
   )
 
   # Extract component p-values for metadata
-  pvals <- sapply(tests, pval)
+  pvals <- vapply(tests, pval, numeric(1))
 
   # Rewrap with union_test class and metadata
   hypothesis_test(
@@ -1167,6 +1173,10 @@ invert_test <- function(test_fn, grid, alpha = 0.05) {
   )
 }
 
+#' Print method for confidence sets
+#' @param x a confidence_set object
+#' @param ... additional arguments (ignored)
+#' @return Returns `x` invisibly.
 #' @export
 print.confidence_set <- function(x, ...) {
   cat(sprintf("Confidence set (%.0f%% level)\n", x$level * 100))
@@ -1184,10 +1194,17 @@ print.confidence_set <- function(x, ...) {
 #' Extract the lower bound of a confidence set
 #' @param x a confidence_set object
 #' @param ... additional arguments (ignored)
-#' @return numeric lower bound
+#' @return Named numeric scalar with the lower bound.
+#' @examples
+#' cs <- invert_test(
+#'   function(theta) wald_test(estimate = 5, se = 1.2, null_value = theta),
+#'   grid = seq(0, 10, by = 0.1)
+#' )
+#' lower(cs)
 #' @export
 lower <- function(x, ...) UseMethod("lower")
 
+#' @rdname lower
 #' @export
 lower.confidence_set <- function(x, ...) {
   if (length(x$set) == 0) return(c(lower = NA_real_))
@@ -1197,10 +1214,17 @@ lower.confidence_set <- function(x, ...) {
 #' Extract the upper bound of a confidence set
 #' @param x a confidence_set object
 #' @param ... additional arguments (ignored)
-#' @return numeric upper bound
+#' @return Named numeric scalar with the upper bound.
+#' @examples
+#' cs <- invert_test(
+#'   function(theta) wald_test(estimate = 5, se = 1.2, null_value = theta),
+#'   grid = seq(0, 10, by = 0.1)
+#' )
+#' upper(cs)
 #' @export
 upper <- function(x, ...) UseMethod("upper")
 
+#' @rdname upper
 #' @export
 upper.confidence_set <- function(x, ...) {
   if (length(x$set) == 0) return(c(upper = NA_real_))

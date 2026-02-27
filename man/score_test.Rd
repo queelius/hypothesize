@@ -18,7 +18,15 @@ null value.}
 reference but not used in computation.}
 }
 \value{
-A \code{hypothesis_test} object of subclass \code{score_test}.
+A \code{hypothesis_test} object of subclass \code{score_test} containing:
+\describe{
+\item{stat}{The score statistic \eqn{S}}
+\item{p.value}{P-value from chi-squared distribution}
+\item{dof}{Degrees of freedom (1 for univariate, \eqn{k} for multivariate)}
+\item{score}{The input score value(s)}
+\item{fisher_info}{The input Fisher information}
+\item{null_value}{The input null hypothesis value (if provided)}
+}
 }
 \description{
 Computes the score test statistic and p-value for testing whether a

@@ -2,9 +2,12 @@
 % Please edit documentation in R/hypothesize.R
 \name{lower}
 \alias{lower}
+\alias{lower.confidence_set}
 \title{Extract the lower bound of a confidence set}
 \usage{
 lower(x, ...)
+
+\method{lower}{confidence_set}(x, ...)
 }
 \arguments{
 \item{x}{a confidence_set object}
@@ -12,8 +15,15 @@ lower(x, ...)
 \item{...}{additional arguments (ignored)}
 }
 \value{
-numeric lower bound
+Named numeric scalar with the lower bound.
 }
 \description{
 Extract the lower bound of a confidence set
+}
+\examples{
+cs <- invert_test(
+  function(theta) wald_test(estimate = 5, se = 1.2, null_value = theta),
+  grid = seq(0, 10, by = 0.1)
+)
+lower(cs)
 }

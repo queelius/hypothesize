@@ -1,5 +1,5 @@
 Package: hypothesize
-Title: A Consistent API for Hypothesis Testing
+Title: Consistent API for Hypothesis Testing
 Version: 0.11.0
 Authors@R:
     person("Alexander", "Towell", , "lex@metafunctor.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0001-6443-9897"))
@@ -12,10 +12,8 @@ Description: Provides a consistent API for hypothesis testing built on
     other packages that want to wrap their hypothesis tests in a
     consistent interface.
 Encoding: UTF-8
-Maintainer: Alexander Towell <lex@metafunctor.com>
 License: MIT + file LICENSE
 ByteCompile: true
-LazyData: true
 Imports:
     stats
 URL: https://github.com/queelius/hypothesize,

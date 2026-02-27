@@ -2,9 +2,12 @@
 % Please edit documentation in R/hypothesize.R
 \name{dof}
 \alias{dof}
-\title{Generic method for extracting the degrees of freedom from a hypothesis test}
+\alias{dof.hypothesis_test}
+\title{Extract the degrees of freedom from a hypothesis test}
 \usage{
 dof(x, ...)
+
+\method{dof}{hypothesis_test}(x, ...)
 }
 \arguments{
 \item{x}{a hypothesis test object}
@@ -12,8 +15,12 @@ dof(x, ...)
 \item{...}{additional arguments to pass into the method}
 }
 \value{
-degrees of freedom
+Numeric degrees of freedom.
 }
 \description{
-Generic method for extracting the degrees of freedom from a hypothesis test
+Extract the degrees of freedom from a hypothesis test
+}
+\examples{
+w <- wald_test(estimate = 2.5, se = 0.8)
+dof(w)
 }

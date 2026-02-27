@@ -2,10 +2,12 @@
 % Please edit documentation in R/hypothesize.R
 \name{is_significant_at}
 \alias{is_significant_at}
-\title{Generic method for checking if a hypothesis test is significant at a given
-significance level.}
+\alias{is_significant_at.hypothesis_test}
+\title{Check if a hypothesis test is significant at a given level}
 \usage{
 is_significant_at(x, alpha, ...)
+
+\method{is_significant_at}{hypothesis_test}(x, alpha, ...)
 }
 \arguments{
 \item{x}{a hypothesis test object}
@@ -15,10 +17,13 @@ is_significant_at(x, alpha, ...)
 \item{...}{additional arguments passed to methods}
 }
 \value{
-logical indicating whether the test is significant at the given
-significance level alpha (e.g., 0.05) or not.
+Logical indicating whether the test is significant at level
+\code{alpha}.
 }
 \description{
-Generic method for checking if a hypothesis test is significant at a given
-significance level.
+Check if a hypothesis test is significant at a given level
+}
+\examples{
+w <- wald_test(estimate = 2.5, se = 0.8)
+is_significant_at(w, 0.05)
 }

@@ -11,9 +11,12 @@
 
 This is a new CRAN submission. There are no downstream dependencies.
 
-## Notes
+## Changes in v0.11.0
 
-This package provides a consistent API for hypothesis testing in R, designed
-around principles from SICP (data abstraction, closure property, higher-order
-functions). It implements z-tests, Wald tests, likelihood ratio tests, Fisher's
-method for combining p-values, and multiple testing corrections.
+* Added Boolean algebra over hypothesis tests: `complement_test()` (NOT),
+  `intersection_test()` (AND), `union_test()` (OR via De Morgan's law)
+* Added `invert_test()` for test-confidence duality (grid-based CI inversion)
+* Extended `wald_test()` and `score_test()` to multivariate case (vector
+  estimates with variance-covariance matrices)
+* Added `confidence_set` class with `lower()`, `upper()`, and `print()` methods
+* New vignette: `boolean-algebra` covering the Boolean algebra and duality
