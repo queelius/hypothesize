@@ -17,3 +17,10 @@ Returns \code{x} invisibly.
 \description{
 Print method for confidence sets
 }
+\examples{
+cs <- invert_test(
+  function(theta) wald_test(estimate = 5, se = 1.2, null_value = theta),
+  grid = seq(0, 10, by = 0.1)
+)
+print(cs)
+}

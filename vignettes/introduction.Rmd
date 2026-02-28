@@ -191,15 +191,15 @@ tests <- list(
 )
 
 # Original p-values
-sapply(tests, pval)
+vapply(tests, pval, numeric(1))
 
 # Bonferroni-adjusted p-values
 adjusted <- adjust_pval(tests, method = "bonferroni")
-sapply(adjusted, pval)
+vapply(adjusted, pval, numeric(1))
 
 # Less conservative: Benjamini-Hochberg (FDR control)
 adjusted_bh <- adjust_pval(tests, method = "BH")
-sapply(adjusted_bh, pval)
+vapply(adjusted_bh, pval, numeric(1))
 ```
 
 The adjusted tests retain all original properties:

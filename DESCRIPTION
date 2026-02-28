@@ -13,7 +13,7 @@ Description: Provides a consistent API for hypothesis testing built on
     consistent interface.
 Encoding: UTF-8
 License: MIT + file LICENSE
-ByteCompile: true
+Depends: R (>= 3.5.0)
 Imports:
     stats
 URL: https://github.com/queelius/hypothesize,

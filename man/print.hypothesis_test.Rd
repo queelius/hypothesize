@@ -17,3 +17,7 @@ Returns \code{x} invisibly.
 \description{
 Print method for hypothesis tests
 }
+\examples{
+w <- wald_test(estimate = 2.5, se = 0.8)
+print(w)
+}

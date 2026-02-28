@@ -765,3 +765,38 @@ test_that("wald_test rejects se and vcov together", {
   expect_error(wald_test(estimate = 1, se = 0.5, vcov = matrix(1)),
                "exactly one")
 })
+
+test_that("wald_test rejects neither se nor vcov", {
+  expect_error(wald_test(estimate = 1), "exactly one")
+})
+
+test_that("confint.wald_test errors on multivariate case", {
+  V <- diag(c(1, 1))
+  w <- wald_test(estimate = c(1, 2), vcov = V)
+  expect_error(confint(w), "multivariate")
+})
+
+test_that("empty confidence set prints, lower, upper work", {
+  # Test with a value far from 0 so nothing is in the CI
+  cs <- invert_test(
+    function(theta) wald_test(estimate = 100, se = 0.01, null_value = theta),
+    grid = seq(0, 1, by = 0.1)
+  )
+  expect_equal(length(cs$set), 0)
+  expect_true(is.na(lower(cs)))
+  expect_true(is.na(upper(cs)))
+  expect_output(print(cs), "Empty set")
+})
+
+test_that("fisher_combine works with a single test", {
+  result <- fisher_combine(0.05)
+  expect_s3_class(result, "hypothesis_test")
+  expect_equal(dof(result), 2)
+})
+
+test_that("intersection_test and union_test work with a single argument", {
+  it <- intersection_test(0.03)
+  expect_equal(pval(it), 0.03)
+  ut <- union_test(0.03)
+  expect_s3_class(ut, "hypothesis_test")
+})

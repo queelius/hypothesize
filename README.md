@@ -113,11 +113,11 @@ tests <- list(
 )
 
 # Original p-values
-sapply(tests, pval)
+vapply(tests, pval, numeric(1))
 #> [1] 0.0124 0.0455 0.0865
 
 # Bonferroni-adjusted
-sapply(adjust_pval(tests, method = "bonferroni"), pval)
+vapply(adjust_pval(tests, method = "bonferroni"), pval, numeric(1))
 #> [1] 0.0373 0.1365 0.2594
 ```
 

@@ -15,3 +15,5 @@
 ^\.claude$
 ^joss-audit-report\.md$
 ^README\.html$
+^docs-homepage\.png$
+^\.playwright-mcp$

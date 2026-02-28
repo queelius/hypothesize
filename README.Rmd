@@ -98,10 +98,10 @@ tests <- list(
 )
 
 # Original p-values
-sapply(tests, pval)
+vapply(tests, pval, numeric(1))
 
 # Bonferroni-adjusted
-sapply(adjust_pval(tests, method = "bonferroni"), pval)
+vapply(adjust_pval(tests, method = "bonferroni"), pval, numeric(1))
 ```
 
 ## Duality: Tests ↔ Confidence Intervals

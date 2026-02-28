@@ -97,12 +97,12 @@ tests <- list(
 
 # BH (FDR) correction - n is inferred from list length
 adjusted <- adjust_pval(tests, method = "BH")
-sapply(adjusted, pval)  # Adjusted p-values
+vapply(adjusted, pval, numeric(1))  # Adjusted p-values
 
 # Compare methods
-sapply(tests, pval)  # Original
-sapply(adjust_pval(tests, method = "bonferroni"), pval)  # Conservative
-sapply(adjust_pval(tests, method = "BH"), pval)  # Less conservative
+vapply(tests, pval, numeric(1))  # Original
+vapply(adjust_pval(tests, method = "bonferroni"), pval, numeric(1))
+vapply(adjust_pval(tests, method = "BH"), pval, numeric(1))
 
 }
 \seealso{

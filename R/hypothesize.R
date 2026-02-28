@@ -86,14 +86,17 @@ hypothesis_test <- function(stat, p.value, dof, superclasses = NULL, ...) {
 #' @param x a hypothesis test
 #' @param ... additional arguments
 #' @return Returns `x` invisibly.
+#' @examples
+#' w <- wald_test(estimate = 2.5, se = 0.8)
+#' print(w)
 #' @export
 print.hypothesis_test <- function(x, ...) {
-  cat("Hypothesis test (", class(x)[1], ")\n")
+  cat(sprintf("Hypothesis test (%s)\n", class(x)[1]))
   cat("-----------------------------\n")
-  cat("Test statistic: ", test_stat(x), "\n")
-  cat("P-value: ", pval(x), "\n")
-  cat("Degrees of freedom: ", dof(x), "\n")
-  cat("Significant at 5% level: ", is_significant_at(x, 0.05), "\n")
+  cat(sprintf("Test statistic: %s\n", test_stat(x)))
+  cat(sprintf("P-value: %s\n", pval(x)))
+  cat(sprintf("Degrees of freedom: %s\n", dof(x)))
+  cat(sprintf("Significant at 5%% level: %s\n", is_significant_at(x, 0.05)))
   invisible(x)
 }
 
@@ -732,6 +735,10 @@ confint.hypothesis_test <- function(object, parm = NULL, level = 0.95, ...) {
 #' @rdname confint.hypothesis_test
 #' @export
 confint.wald_test <- function(object, parm = NULL, level = 0.95, ...) {
+  if (is.null(object$se)) {
+    stop("confint() is not supported for multivariate Wald tests. ",
+         "Use invert_test() for multivariate confidence regions.")
+  }
   alpha <- 1 - level
   z_crit <- qnorm(1 - alpha / 2)
   estimate <- object$estimate
@@ -836,12 +843,12 @@ confint.z_test <- function(object, parm = NULL, level = 0.95, ...) {
 #'
 #' # BH (FDR) correction - n is inferred from list length
 #' adjusted <- adjust_pval(tests, method = "BH")
-#' sapply(adjusted, pval)  # Adjusted p-values
+#' vapply(adjusted, pval, numeric(1))  # Adjusted p-values
 #'
 #' # Compare methods
-#' sapply(tests, pval)  # Original
-#' sapply(adjust_pval(tests, method = "bonferroni"), pval)  # Conservative
-#' sapply(adjust_pval(tests, method = "BH"), pval)  # Less conservative
+#' vapply(tests, pval, numeric(1))  # Original
+#' vapply(adjust_pval(tests, method = "bonferroni"), pval, numeric(1))
+#' vapply(adjust_pval(tests, method = "BH"), pval, numeric(1))
 #'
 #' @seealso [stats::p.adjust()] for the underlying adjustment,
 #'   [fisher_combine()] for combining (not adjusting) p-values
@@ -1177,6 +1184,12 @@ invert_test <- function(test_fn, grid, alpha = 0.05) {
 #' @param x a confidence_set object
 #' @param ... additional arguments (ignored)
 #' @return Returns `x` invisibly.
+#' @examples
+#' cs <- invert_test(
+#'   function(theta) wald_test(estimate = 5, se = 1.2, null_value = theta),
+#'   grid = seq(0, 10, by = 0.1)
+#' )
+#' print(cs)
 #' @export
 print.confidence_set <- function(x, ...) {
   cat(sprintf("Confidence set (%.0f%% level)\n", x$level * 100))
@@ -1184,9 +1197,9 @@ print.confidence_set <- function(x, ...) {
   if (length(x$set) == 0) {
     cat("Empty set (all null values rejected)\n")
   } else {
-    cat("Lower: ", min(x$set), "\n")
-    cat("Upper: ", max(x$set), "\n")
-    cat("Grid points in set: ", length(x$set), "of", length(x$grid), "\n")
+    cat(sprintf("Lower: %s\n", min(x$set)))
+    cat(sprintf("Upper: %s\n", max(x$set)))
+    cat(sprintf("Grid points in set: %s of %s\n", length(x$set), length(x$grid)))
   }
   invisible(x)
 }
