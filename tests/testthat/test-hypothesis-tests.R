@@ -359,7 +359,7 @@ test_that("adjusted tests can be combined with fisher_combine", {
 
   expect_s3_class(combined, "fisher_combined_test")
   # Combined p-values should use the adjusted p-values
-  expected_stat <- -2 * sum(log(sapply(adjusted, pval)))
+  expected_stat <- -2 * sum(log(vapply(adjusted, pval, numeric(1))))
   expect_equal(test_stat(combined), expected_stat)
 })
 
