@@ -10,14 +10,9 @@ union_test(...)
 \item{...}{\code{hypothesis_test} objects or numeric p-values to combine.}
 }
 \value{
-A \code{hypothesis_test} object of subclass \code{union_test} containing:
-\describe{
-\item{stat}{The minimum p-value (used as the test statistic)}
-\item{p.value}{\eqn{\min(p_1, \ldots, p_k)}}
-\item{dof}{Number of component tests}
-\item{n_tests}{Number of tests combined}
-\item{component_pvals}{Vector of individual p-values}
-}
+A \code{hypothesis_test} object of subclass \code{union_test}. The \code{stat}
+and \code{dof} fields are \code{NA} (no natural test statistic for p-value
+aggregation). Metadata fields: \code{n_tests} and \code{component_pvals}.
 }
 \description{
 Combines hypothesis tests using the OR rule: rejects when ANY component

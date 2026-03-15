@@ -253,8 +253,13 @@ is_significant_at.hypothesis_test <- function(x, alpha, ...) {
 #' @importFrom stats pchisq
 #' @export
 lrt <- function(null_loglik, alt_loglik, dof) {
+  if (dof <= 0) stop("'dof' must be positive")
   stat <- -2 * (null_loglik - alt_loglik)
-  p.value <- pchisq(stat, df = dof, lower.tail = FALSE)
+  if (stat < 0) {
+    warning("Negative LRT statistic (", round(stat, 4),
+            "). alt_loglik should be >= null_loglik for nested models.")
+  }
+  p.value <- pchisq(max(stat, 0), df = dof, lower.tail = FALSE)
   hypothesis_test(
     stat = stat,
     p.value = p.value,
@@ -336,6 +341,8 @@ lrt <- function(null_loglik, alt_loglik, dof) {
 #' @importFrom stats pnorm
 #' @export
 z_test <- function(x, mu0 = 0, sigma, alternative = c("two.sided", "less", "greater")) {
+  if (length(x) == 0) stop("'x' must contain at least one observation")
+  if (sigma <= 0) stop("'sigma' must be positive")
   alternative <- match.arg(alternative)
   n <- length(x)
   xbar <- mean(x)
@@ -452,9 +459,13 @@ wald_test <- function(estimate, se = NULL, vcov = NULL, null_value = 0) {
 
   if (!is.null(vcov)) {
     # Multivariate: W = (theta - theta0)' V^{-1} (theta - theta0) ~ chi-sq(k)
+    if (!is.matrix(vcov)) stop("'vcov' must be a matrix")
     diff <- estimate - null_value
     k <- length(estimate)
-    stat <- as.numeric(t(diff) %*% solve(vcov) %*% diff)
+    inv_vcov <- tryCatch(solve(vcov), error = function(e) {
+      stop("'vcov' must be a positive-definite matrix (not singular)")
+    })
+    stat <- as.numeric(t(diff) %*% inv_vcov %*% diff)
     p.value <- pchisq(stat, df = k, lower.tail = FALSE)
     hypothesis_test(
       stat = stat,
@@ -467,6 +478,7 @@ wald_test <- function(estimate, se = NULL, vcov = NULL, null_value = 0) {
     )
   } else {
     # Univariate: W = z^2 ~ chi-sq(1)
+    if (se <= 0) stop("'se' must be positive")
     z <- (estimate - null_value) / se
     stat <- z^2
     p.value <- pchisq(stat, df = 1, lower.tail = FALSE)
@@ -550,8 +562,12 @@ wald_test <- function(estimate, se = NULL, vcov = NULL, null_value = 0) {
 score_test <- function(score, fisher_info, null_value = NULL) {
   if (is.matrix(fisher_info)) {
     k <- length(score)
-    stat <- as.numeric(t(score) %*% solve(fisher_info) %*% score)
+    inv_fi <- tryCatch(solve(fisher_info), error = function(e) {
+      stop("'fisher_info' must be a positive-definite matrix (not singular)")
+    })
+    stat <- as.numeric(t(score) %*% inv_fi %*% score)
   } else {
+    if (fisher_info <= 0) stop("'fisher_info' must be positive")
     k <- 1
     stat <- score^2 / fisher_info
   }
@@ -752,12 +768,20 @@ confint.wald_test <- function(object, parm = NULL, level = 0.95, ...) {
 #' @export
 confint.z_test <- function(object, parm = NULL, level = 0.95, ...) {
   alpha <- 1 - level
-  z_crit <- qnorm(1 - alpha / 2)
   estimate <- object$estimate
   se <- object$sigma / sqrt(object$n)
+  alt <- object$alternative
 
-  c(lower = estimate - z_crit * se,
-    upper = estimate + z_crit * se)
+  if (alt == "less") {
+    z_crit <- qnorm(1 - alpha)
+    c(lower = -Inf, upper = estimate + z_crit * se)
+  } else if (alt == "greater") {
+    z_crit <- qnorm(1 - alpha)
+    c(lower = estimate - z_crit * se, upper = Inf)
+  } else {
+    z_crit <- qnorm(1 - alpha / 2)
+    c(lower = estimate - z_crit * se, upper = estimate + z_crit * se)
+  }
 }
 
 #' Adjust P-Value for Multiple Testing
@@ -863,15 +887,13 @@ adjust_pval <- function(x, method = "bonferroni", n = NULL) {
     adjusted_pvals <- p.adjust(pvals, method = method, n = n)
 
     mapply(function(test, adj_p, orig_p) {
-      hypothesis_test(
-        stat = test_stat(test),
-        p.value = adj_p,
-        dof = dof(test),
-        superclasses = c("adjusted_test", class(test)),
-        adjustment_method = method,
-        original_pval = orig_p,
-        n_tests = n
-      )
+      result <- test
+      result$p.value <- adj_p
+      result$adjustment_method <- method
+      result$original_pval <- orig_p
+      result$n_tests <- n
+      class(result) <- unique(c("adjusted_test", class(test)))
+      result
     }, x, adjusted_pvals, pvals, SIMPLIFY = FALSE)
   } else {
     # Single test
@@ -882,15 +904,13 @@ adjust_pval <- function(x, method = "bonferroni", n = NULL) {
     orig_p <- pval(x)
     adj_p <- p.adjust(orig_p, method = method, n = n)
 
-    hypothesis_test(
-      stat = test_stat(x),
-      p.value = adj_p,
-      dof = dof(x),
-      superclasses = c("adjusted_test", class(x)),
-      adjustment_method = method,
-      original_pval = orig_p,
-      n_tests = n
-    )
+    result <- x
+    result$p.value <- adj_p
+    result$adjustment_method <- method
+    result$original_pval <- orig_p
+    result$n_tests <- n
+    class(result) <- unique(c("adjusted_test", class(x)))
+    result
   }
 }
 
@@ -973,8 +993,9 @@ complement_test <- function(test) {
 #'
 #' @param ... `hypothesis_test` objects or numeric p-values.
 #'
-#' @return A `hypothesis_test` of subclass `intersection_test` with fields
-#'   `n_tests` and `component_pvals`.
+#' @return A `hypothesis_test` of subclass `intersection_test`. The `stat`
+#'   and `dof` fields are `NA` (no natural test statistic for p-value
+#'   aggregation). Metadata fields: `n_tests` and `component_pvals`.
 #'
 #' @examples
 #' # All must reject for intersection to reject
@@ -993,9 +1014,9 @@ intersection_test <- function(...) {
   k <- length(pvals)
   p.value <- max(pvals)
   hypothesis_test(
-    stat = p.value,
+    stat = NA_real_,
     p.value = p.value,
-    dof = k,
+    dof = NA_real_,
     superclasses = "intersection_test",
     n_tests = k,
     component_pvals = pvals
@@ -1048,14 +1069,9 @@ intersection_test <- function(...) {
 #'
 #' @param ... `hypothesis_test` objects or numeric p-values to combine.
 #'
-#' @return A `hypothesis_test` object of subclass `union_test` containing:
-#' \describe{
-#'   \item{stat}{The minimum p-value (used as the test statistic)}
-#'   \item{p.value}{\eqn{\min(p_1, \ldots, p_k)}}
-#'   \item{dof}{Number of component tests}
-#'   \item{n_tests}{Number of tests combined}
-#'   \item{component_pvals}{Vector of individual p-values}
-#' }
+#' @return A `hypothesis_test` object of subclass `union_test`. The `stat`
+#'   and `dof` fields are `NA` (no natural test statistic for p-value
+#'   aggregation). Metadata fields: `n_tests` and `component_pvals`.
 #'
 #' @examples
 #' # Screen three biomarkers: reject if ANY is significant
@@ -1077,27 +1093,21 @@ intersection_test <- function(...) {
 union_test <- function(...) {
   inputs <- list(...)
 
-  # Wrap raw p-values as hypothesis_test objects for complement_test
-  tests <- lapply(inputs, function(x) {
-    if (inherits(x, "hypothesis_test")) x
-    else if (is.numeric(x) && length(x) == 1)
-      hypothesis_test(stat = NA_real_, p.value = x, dof = NA_real_)
+  # Extract p-values from hypothesis_test objects or raw numerics
+  pvals <- vapply(inputs, function(x) {
+    if (inherits(x, "hypothesis_test")) pval(x)
+    else if (is.numeric(x) && length(x) == 1) x
     else stop("Arguments must be hypothesis_test objects or numeric p-values")
-  })
+  }, numeric(1))
 
-  # De Morgan: OR(a, b, ...) = NOT(AND(NOT(a), NOT(b), ...))
-  result <- complement_test(
-    do.call(intersection_test, lapply(tests, complement_test))
-  )
+  # OR = min(p) — equivalent to De Morgan's NOT(AND(NOT(p_1), ..., NOT(p_k)))
+  # but computed directly to avoid floating-point cancellation at extreme p-values
+  p.value <- min(pvals)
 
-  # Extract component p-values for metadata
-  pvals <- vapply(tests, pval, numeric(1))
-
-  # Rewrap with union_test class and metadata
   hypothesis_test(
-    stat = pval(result),
-    p.value = pval(result),
-    dof = length(pvals),
+    stat = NA_real_,
+    p.value = p.value,
+    dof = NA_real_,
     superclasses = "union_test",
     n_tests = length(pvals),
     component_pvals = pvals

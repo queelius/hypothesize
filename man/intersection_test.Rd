@@ -10,8 +10,9 @@ intersection_test(...)
 \item{...}{\code{hypothesis_test} objects or numeric p-values.}
 }
 \value{
-A \code{hypothesis_test} of subclass \code{intersection_test} with fields
-\code{n_tests} and \code{component_pvals}.
+A \code{hypothesis_test} of subclass \code{intersection_test}. The \code{stat}
+and \code{dof} fields are \code{NA} (no natural test statistic for p-value
+aggregation). Metadata fields: \code{n_tests} and \code{component_pvals}.
 }
 \description{
 Combines hypothesis tests using the AND rule: rejects only when ALL

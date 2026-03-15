@@ -800,3 +800,128 @@ test_that("intersection_test and union_test work with a single argument", {
   ut <- union_test(0.03)
   expect_s3_class(ut, "hypothesis_test")
 })
+
+# --- Input validation tests ---
+
+test_that("z_test rejects empty data", {
+  expect_error(z_test(numeric(0), sigma = 1), "at least one")
+})
+
+test_that("z_test rejects non-positive sigma", {
+  expect_error(z_test(1:5, sigma = 0), "positive")
+  expect_error(z_test(1:5, sigma = -1), "positive")
+})
+
+test_that("wald_test rejects non-positive se", {
+  expect_error(wald_test(estimate = 1, se = 0), "positive")
+  expect_error(wald_test(estimate = 1, se = -0.5), "positive")
+})
+
+test_that("wald_test rejects singular vcov", {
+  V <- matrix(c(1, 1, 1, 1), 2, 2)  # singular
+  expect_error(wald_test(estimate = c(1, 2), vcov = V), "singular")
+})
+
+test_that("score_test rejects non-positive fisher_info", {
+  expect_error(score_test(score = 1, fisher_info = 0), "positive")
+  expect_error(score_test(score = 1, fisher_info = -1), "positive")
+})
+
+test_that("score_test rejects singular fisher_info matrix", {
+  M <- matrix(c(1, 1, 1, 1), 2, 2)
+  expect_error(score_test(score = c(1, 2), fisher_info = M), "singular")
+})
+
+test_that("lrt rejects non-positive dof", {
+  expect_error(lrt(null_loglik = -100, alt_loglik = -90, dof = 0), "positive")
+})
+
+test_that("lrt warns on negative statistic", {
+  expect_warning(
+    result <- lrt(null_loglik = -90, alt_loglik = -100, dof = 1),
+    "Negative"
+  )
+  # p-value should be 1 (no evidence against null)
+  expect_equal(pval(result), 1)
+})
+
+# --- confint.z_test one-sided tests ---
+
+test_that("confint.z_test respects alternative='greater'", {
+  z <- z_test(rep(5, 30), mu0 = 0, sigma = 1, alternative = "greater")
+  ci <- confint(z)
+  expect_equal(ci[["upper"]], Inf)
+  expect_true(is.finite(ci[["lower"]]))
+})
+
+test_that("confint.z_test respects alternative='less'", {
+  z <- z_test(rep(-5, 30), mu0 = 0, sigma = 1, alternative = "less")
+  ci <- confint(z)
+  expect_equal(ci[["lower"]], -Inf)
+  expect_true(is.finite(ci[["upper"]]))
+})
+
+test_that("confint.z_test two-sided is finite on both sides", {
+  z <- z_test(rep(5, 30), mu0 = 0, sigma = 1)
+  ci <- confint(z)
+  expect_true(is.finite(ci[["lower"]]))
+  expect_true(is.finite(ci[["upper"]]))
+})
+
+# --- Boolean ops: stat and dof are NA ---
+
+test_that("intersection_test has NA stat and dof", {
+  it <- intersection_test(0.01, 0.03)
+  expect_true(is.na(test_stat(it)))
+  expect_true(is.na(dof(it)))
+  expect_equal(it$n_tests, 2)
+})
+
+test_that("union_test has NA stat and dof", {
+  ut <- union_test(0.01, 0.03)
+  expect_true(is.na(test_stat(ut)))
+  expect_true(is.na(dof(ut)))
+  expect_equal(ut$n_tests, 2)
+})
+
+# --- union_test floating-point precision ---
+
+test_that("union_test preserves extreme p-values without FP cancellation", {
+  p_extreme <- 1e-16
+  ut <- union_test(p_extreme, 0.5)
+  expect_equal(pval(ut), p_extreme)
+})
+
+# --- adjust_pval preserves original test fields ---
+
+test_that("adjust_pval preserves original test fields for confint", {
+  w <- wald_test(estimate = 5.0, se = 1.2)
+  adj <- adjust_pval(w, method = "bonferroni", n = 10)
+  ci <- confint(adj)
+  expect_true(is.finite(ci[["lower"]]))
+  expect_true(is.finite(ci[["upper"]]))
+  expect_equal(adj$estimate, 5.0)
+  expect_equal(adj$se, 1.2)
+})
+
+test_that("wald_test rejects non-matrix vcov", {
+  expect_error(wald_test(estimate = c(1, 2), vcov = c(1, 2)), "matrix")
+})
+
+test_that("union_test rejects invalid argument types", {
+  expect_error(union_test("not_a_test"), "hypothesis_test objects or numeric")
+})
+
+test_that("adjust_pval list preserves fields", {
+  tests <- list(
+    wald_test(estimate = 2.5, se = 0.8),
+    wald_test(estimate = 1.2, se = 0.5)
+  )
+  adjusted <- adjust_pval(tests, method = "bonferroni")
+  expect_equal(adjusted[[1]]$estimate, 2.5)
+  expect_equal(adjusted[[1]]$se, 0.8)
+  expect_equal(adjusted[[2]]$estimate, 1.2)
+  # confint should work on adjusted tests
+  ci <- confint(adjusted[[1]])
+  expect_true(is.finite(ci[["lower"]]))
+})
