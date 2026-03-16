@@ -4,17 +4,20 @@
 \alias{lrt}
 \title{Likelihood Ratio Test}
 \usage{
-lrt(null_loglik, alt_loglik, dof)
+lrt(null_loglik, alt_loglik, dof = NULL)
 }
 \arguments{
-\item{null_loglik}{Numeric. The maximized log-likelihood under the null
-(simpler) model.}
+\item{null_loglik}{The log-likelihood under the null (simpler) model.
+Either a numeric scalar or a \code{logLik} object (as returned by
+\code{\link[stats:logLik]{stats::logLik()}}).}
 
-\item{alt_loglik}{Numeric. The maximized log-likelihood under the
-alternative (more complex) model.}
+\item{alt_loglik}{The log-likelihood under the alternative (more complex)
+model. Either a numeric scalar or a \code{logLik} object.}
 
 \item{dof}{Positive integer. Degrees of freedom, typically the difference
-in the number of free parameters between models.}
+in the number of free parameters between models. When both
+\code{null_loglik} and \code{alt_loglik} are \code{logLik} objects, \code{dof} is
+computed automatically from their \code{df} attributes and may be omitted.}
 }
 \value{
 A \code{hypothesis_test} object of subclass \code{likelihood_ratio_test}
@@ -24,8 +27,8 @@ containing:
 \item{p.value}{P-value from chi-squared distribution with \code{dof} degrees
 of freedom}
 \item{dof}{The degrees of freedom}
-\item{null_loglik}{The input null model log-likelihood}
-\item{alt_loglik}{The input alternative model log-likelihood}
+\item{null_loglik}{The input null model log-likelihood (numeric)}
+\item{alt_loglik}{The input alternative model log-likelihood (numeric)}
 }
 }
 \description{
@@ -69,7 +72,7 @@ often preferred because it is invariant to reparameterization.
 }
 
 \examples{
-# Comparing nested regression models
+# Comparing nested regression models with raw log-likelihoods
 # Null model: y ~ x1 (log-likelihood = -150)
 # Alt model:  y ~ x1 + x2 + x3 (log-likelihood = -140)
 # Difference: 3 additional parameters
@@ -83,11 +86,20 @@ is_significant_at(test, 0.05)
 # Extract the test statistic (should be 20)
 test_stat(test)
 
-# Access stored inputs for inspection
-test$null_loglik
-test$alt_loglik
+# Using logLik objects (dof computed automatically)
+ll_null <- structure(-150, df = 2, nobs = 100, class = "logLik")
+ll_alt  <- structure(-140, df = 5, nobs = 100, class = "logLik")
+lrt(ll_null, ll_alt)  # dof = 5 - 2 = 3
+
+# With real models (any model supporting stats::logLik)
+x <- 1:50
+y <- 2 + 3 * x + rnorm(50)
+m0 <- lm(y ~ 1)
+m1 <- lm(y ~ x)
+lrt(logLik(m0), logLik(m1))
 
 }
 \seealso{
-\code{\link[=wald_test]{wald_test()}} for testing individual parameters
+\code{\link[=wald_test]{wald_test()}} for testing individual parameters,
+\code{\link[stats:logLik]{stats::logLik()}} for extracting log-likelihoods from fitted models
 }

@@ -212,12 +212,15 @@ is_significant_at.hypothesis_test <- function(x, alpha, ...) {
 #' All three are asymptotically equivalent under \eqn{H_0}, but the LRT is
 #' often preferred because it is invariant to reparameterization.
 #'
-#' @param null_loglik Numeric. The maximized log-likelihood under the null
-#'   (simpler) model.
-#' @param alt_loglik Numeric. The maximized log-likelihood under the
-#'   alternative (more complex) model.
+#' @param null_loglik The log-likelihood under the null (simpler) model.
+#'   Either a numeric scalar or a `logLik` object (as returned by
+#'   [stats::logLik()]).
+#' @param alt_loglik The log-likelihood under the alternative (more complex)
+#'   model. Either a numeric scalar or a `logLik` object.
 #' @param dof Positive integer. Degrees of freedom, typically the difference
-#'   in the number of free parameters between models.
+#'   in the number of free parameters between models. When both
+#'   `null_loglik` and `alt_loglik` are `logLik` objects, `dof` is
+#'   computed automatically from their `df` attributes and may be omitted.
 #'
 #' @return A `hypothesis_test` object of subclass `likelihood_ratio_test`
 #'   containing:
@@ -226,12 +229,12 @@ is_significant_at.hypothesis_test <- function(x, alpha, ...) {
 #'   \item{p.value}{P-value from chi-squared distribution with `dof` degrees
 #'     of freedom}
 #'   \item{dof}{The degrees of freedom}
-#'   \item{null_loglik}{The input null model log-likelihood}
-#'   \item{alt_loglik}{The input alternative model log-likelihood}
+#'   \item{null_loglik}{The input null model log-likelihood (numeric)}
+#'   \item{alt_loglik}{The input alternative model log-likelihood (numeric)}
 #' }
 #'
 #' @examples
-#' # Comparing nested regression models
+#' # Comparing nested regression models with raw log-likelihoods
 #' # Null model: y ~ x1 (log-likelihood = -150)
 #' # Alt model:  y ~ x1 + x2 + x3 (log-likelihood = -140)
 #' # Difference: 3 additional parameters
@@ -245,15 +248,39 @@ is_significant_at.hypothesis_test <- function(x, alpha, ...) {
 #' # Extract the test statistic (should be 20)
 #' test_stat(test)
 #'
-#' # Access stored inputs for inspection
-#' test$null_loglik
-#' test$alt_loglik
+#' # Using logLik objects (dof computed automatically)
+#' ll_null <- structure(-150, df = 2, nobs = 100, class = "logLik")
+#' ll_alt  <- structure(-140, df = 5, nobs = 100, class = "logLik")
+#' lrt(ll_null, ll_alt)  # dof = 5 - 2 = 3
 #'
-#' @seealso [wald_test()] for testing individual parameters
+#' # With real models (any model supporting stats::logLik)
+#' x <- 1:50
+#' y <- 2 + 3 * x + rnorm(50)
+#' m0 <- lm(y ~ 1)
+#' m1 <- lm(y ~ x)
+#' lrt(logLik(m0), logLik(m1))
+#'
+#' @seealso [wald_test()] for testing individual parameters,
+#'   [stats::logLik()] for extracting log-likelihoods from fitted models
 #' @importFrom stats pchisq
 #' @export
-lrt <- function(null_loglik, alt_loglik, dof) {
+lrt <- function(null_loglik, alt_loglik, dof = NULL) {
+  # Accept logLik objects: extract values and auto-derive dof
+  if (inherits(null_loglik, "logLik") && inherits(alt_loglik, "logLik")) {
+    if (is.null(dof)) {
+      dof <- attr(alt_loglik, "df") - attr(null_loglik, "df")
+    }
+    null_loglik <- as.numeric(null_loglik)
+    alt_loglik <- as.numeric(alt_loglik)
+  } else if (inherits(null_loglik, "logLik") || inherits(alt_loglik, "logLik")) {
+    stop("Both 'null_loglik' and 'alt_loglik' must be logLik objects, or both numeric")
+  }
+
+  if (is.null(dof)) {
+    stop("'dof' is required when 'null_loglik' and 'alt_loglik' are numeric")
+  }
   if (dof <= 0) stop("'dof' must be positive")
+
   stat <- -2 * (null_loglik - alt_loglik)
   if (stat < 0) {
     warning("Negative LRT statistic (", round(stat, 4),

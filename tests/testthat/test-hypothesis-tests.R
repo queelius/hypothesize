@@ -80,6 +80,47 @@ test_that("lrt has correct class", {
   expect_s3_class(result, "hypothesis_test")
 })
 
+# --- lrt with logLik objects ---
+
+test_that("lrt accepts logLik objects and auto-derives dof", {
+  ll0 <- structure(-150, df = 2, nobs = 100, class = "logLik")
+  ll1 <- structure(-140, df = 5, nobs = 100, class = "logLik")
+  result <- lrt(ll0, ll1)
+  expect_equal(dof(result), 3)
+  expect_equal(test_stat(result), 20)
+  expect_equal(result$null_loglik, -150)
+  expect_equal(result$alt_loglik, -140)
+})
+
+test_that("lrt with logLik objects allows dof override", {
+  ll0 <- structure(-150, df = 2, nobs = 100, class = "logLik")
+  ll1 <- structure(-140, df = 5, nobs = 100, class = "logLik")
+  result <- lrt(ll0, ll1, dof = 2)
+  expect_equal(dof(result), 2)  # overridden, not auto-derived 3
+})
+
+test_that("lrt rejects mixed logLik and numeric", {
+  ll <- structure(-150, df = 2, nobs = 100, class = "logLik")
+  expect_error(lrt(ll, -140, dof = 1), "both")
+  expect_error(lrt(-150, ll, dof = 1), "both")
+})
+
+test_that("lrt requires dof when given raw numerics", {
+  expect_error(lrt(-150, -140), "required")
+})
+
+test_that("lrt works with real lm models", {
+  set.seed(42)
+  x <- 1:50
+  y <- 2 + 3 * x + rnorm(50)
+  m0 <- lm(y ~ 1)
+  m1 <- lm(y ~ x)
+  result <- lrt(logLik(m0), logLik(m1))
+  expect_s3_class(result, "likelihood_ratio_test")
+  expect_equal(dof(result), 1)
+  expect_true(pval(result) < 0.001)  # strong linear relationship
+})
+
 # =============================================================================
 # z_test
 # =============================================================================
