@@ -1,3 +1,26 @@
+# hypothesize 1.0.0
+
+## Improvements since 0.11.0
+
+* `lrt()` now accepts standard R `logLik` objects (from `stats::logLik()`),
+  deriving degrees of freedom automatically from their `df` attributes.
+* `confint.z_test()` now returns one-sided confidence bounds for one-sided
+  tests (`alternative = "less"` or `"greater"`).
+* `adjust_pval()` preserves all original test fields (estimate, se, etc.),
+  so `confint()` works on adjusted tests.
+* `union_test()` computes `min(p)` directly instead of via De Morgan chain,
+  avoiding floating-point cancellation at extreme p-values.
+* `intersection_test()` and `union_test()` use `NA` for `stat` and `dof`
+  (these operations have no natural test statistic).
+* Input validation on all primitive constructors: `z_test()` rejects empty
+  data and non-positive sigma; `wald_test()` rejects zero/negative se and
+  singular vcov; `score_test()` rejects zero/negative fisher_info;
+  `lrt()` validates positive dof and warns on negative LRT statistics.
+* All `sapply()` replaced with `vapply()` for type safety.
+* All examples use `set.seed()` for reproducibility.
+* R source is ASCII-only.
+* 227 tests, 100% line coverage.
+
 # hypothesize 0.11.0
 
 ## New Features

@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
 title: "hypothesize"
-version: "0.11.0"
+version: "1.0.0"
 doi: "10.5281/zenodo.18765626"
 license: MIT
 repository-code: "https://github.com/queelius/hypothesize"
