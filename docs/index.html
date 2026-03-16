@@ -5,13 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A Consistent API for Hypothesis Testing • hypothesize</title>
+<title>Consistent API for Hypothesis Testing • hypothesize</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="A Consistent API for Hypothesis Testing">
+<script src="pkgdown.js"></script><meta property="og:title" content="Consistent API for Hypothesis Testing">
 <meta property="og:description" content="Provides a consistent API for hypothesis testing built on principles from Structure and Interpretation of Computer Programs: data abstraction, closure (combining tests yields tests), and higher-order functions (transforming tests). Implements z-tests, Wald tests, likelihood ratio tests, Fisher's method for combining p-values, and multiple testing corrections. Designed for use by other packages that want to wrap their hypothesis tests in a consistent interface.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">hypothesize</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.10.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.0</span>
       </span>
     </div>
 
@@ -50,9 +50,15 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="articles/boolean-algebra.html">Boolean Algebra of Hypothesis Tests</a>
+    </li>
+    <li>
       <a href="articles/introduction.html">Introduction to hypothesize</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -77,11 +83,23 @@
 <div class="section level1">
 <div class="page-header"><h1 id="hypothesize">hypothesize<a class="anchor" aria-label="anchor" href="#hypothesize"></a>
 </h1></div>
-<p>A consistent API for hypothesis testing in R, designed around principles from <em>Structure and Interpretation of Computer Programs</em> (SICP): - <strong>Data Abstraction</strong>: Tests are objects with a clean accessor interface - <strong>Closure Property</strong>: Combining tests yields tests - <strong>Higher-Order Functions</strong>: Transform tests into new tests</p>
+<p><a href="https://doi.org/10.5281/zenodo.18765626" class="external-link"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.18765626.svg" alt="DOI"></a></p>
+<p>A consistent API for hypothesis testing in R, designed around principles from <em>Structure and Interpretation of Computer Programs</em> (SICP):</p>
+<ul>
+<li>
+<strong>Data Abstraction</strong>: Tests are objects with a clean accessor interface</li>
+<li>
+<strong>Closure Property</strong>: Combining tests yields tests</li>
+<li>
+<strong>Higher-Order Functions</strong>: Transform tests into new tests</li>
+</ul>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"hypothesize"</span><span class="op">)</span></span></code></pre></div>
+<p>Or install the development version from GitHub:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"queelius/hypothesize"</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -89,7 +107,7 @@
 <h2 id="the-interface">The Interface<a class="anchor" aria-label="anchor" href="#the-interface"></a>
 </h2>
 <p>Every hypothesis test implements the same generic methods:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create a Wald test</span></span>
 <span><span class="va">w</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/wald_test.html">wald_test</a></span><span class="op">(</span>estimate <span class="op">=</span> <span class="fl">2.5</span>, se <span class="op">=</span> <span class="fl">0.8</span>, null_value <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span></span>
@@ -108,64 +126,74 @@
 <div class="section level3">
 <h3 id="z-test-simplest-case">Z-Test (simplest case)<a class="anchor" aria-label="anchor" href="#z-test-simplest-case"></a>
 </h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Test if population mean equals 100 (known sigma = 15)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">30</span>, mean <span class="op">=</span> <span class="fl">105</span>, sd <span class="op">=</span> <span class="fl">15</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/z_test.html">z_test</a></span><span class="op">(</span><span class="va">x</span>, mu0 <span class="op">=</span> <span class="fl">100</span>, sigma <span class="op">=</span> <span class="fl">15</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Hypothesis test ( z_test )</span></span>
+<span><span class="co">#&gt; Hypothesis test (z_test)</span></span>
 <span><span class="co">#&gt; -----------------------------</span></span>
-<span><span class="co">#&gt; Test statistic:  2.2 </span></span>
-<span><span class="co">#&gt; P-value:  0.0277 </span></span>
-<span><span class="co">#&gt; Degrees of freedom:  Inf </span></span>
-<span><span class="co">#&gt; Significant at 5% level:  TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt; Test statistic: 2.20140742409738</span></span>
+<span><span class="co">#&gt; P-value: 0.0277071938999057</span></span>
+<span><span class="co">#&gt; Degrees of freedom: Inf</span></span>
+<span><span class="co">#&gt; Significant at 5% level: TRUE</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="wald-test-general-parameters">Wald Test (general parameters)<a class="anchor" aria-label="anchor" href="#wald-test-general-parameters"></a>
 </h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Test if a regression coefficient equals zero</span></span>
 <span><span class="fu"><a href="reference/wald_test.html">wald_test</a></span><span class="op">(</span>estimate <span class="op">=</span> <span class="fl">1.8</span>, se <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Hypothesis test ( wald_test )</span></span>
+<span><span class="co">#&gt; Hypothesis test (wald_test)</span></span>
 <span><span class="co">#&gt; -----------------------------</span></span>
-<span><span class="co">#&gt; Test statistic:  6.61 </span></span>
-<span><span class="co">#&gt; P-value:  0.0101 </span></span>
-<span><span class="co">#&gt; Degrees of freedom:  1 </span></span>
-<span><span class="co">#&gt; Significant at 5% level:  TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt; Test statistic: 6.61224489795918</span></span>
+<span><span class="co">#&gt; P-value: 0.0101279905493907</span></span>
+<span><span class="co">#&gt; Degrees of freedom: 1</span></span>
+<span><span class="co">#&gt; Significant at 5% level: TRUE</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="likelihood-ratio-test-model-comparison">Likelihood Ratio Test (model comparison)<a class="anchor" aria-label="anchor" href="#likelihood-ratio-test-model-comparison"></a>
 </h3>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Compare nested models</span></span>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># From raw log-likelihoods</span></span>
 <span><span class="fu"><a href="reference/lrt.html">lrt</a></span><span class="op">(</span>null_loglik <span class="op">=</span> <span class="op">-</span><span class="fl">150</span>, alt_loglik <span class="op">=</span> <span class="op">-</span><span class="fl">140</span>, dof <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Hypothesis test ( likelihood_ratio_test )</span></span>
+<span><span class="co">#&gt; Hypothesis test (likelihood_ratio_test)</span></span>
 <span><span class="co">#&gt; -----------------------------</span></span>
-<span><span class="co">#&gt; Test statistic:  20 </span></span>
-<span><span class="co">#&gt; P-value:  0.00017 </span></span>
-<span><span class="co">#&gt; Degrees of freedom:  3 </span></span>
-<span><span class="co">#&gt; Significant at 5% level:  TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt; Test statistic: 20</span></span>
+<span><span class="co">#&gt; P-value: 0.000169742435552826</span></span>
+<span><span class="co">#&gt; Degrees of freedom: 3</span></span>
+<span><span class="co">#&gt; Significant at 5% level: TRUE</span></span>
+<span></span>
+<span><span class="co"># Or from fitted models — dof derived automatically</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">50</span>; <span class="va">y</span> <span class="op">&lt;-</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">3</span> <span class="op">*</span> <span class="va">x</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">50</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/lrt.html">lrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/logLik.html" class="external-link">logLik</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/stats/logLik.html" class="external-link">logLik</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Hypothesis test (likelihood_ratio_test)</span></span>
+<span><span class="co">#&gt; -----------------------------</span></span>
+<span><span class="co">#&gt; Test statistic: 222.696853179322</span></span>
+<span><span class="co">#&gt; P-value: 2.33424827983589e-50</span></span>
+<span><span class="co">#&gt; Degrees of freedom: 1</span></span>
+<span><span class="co">#&gt; Significant at 5% level: TRUE</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
 <h2 id="combining-tests-closure-property">Combining Tests (Closure Property)<a class="anchor" aria-label="anchor" href="#combining-tests-closure-property"></a>
 </h2>
 <p>Fisher’s method combines independent p-values—and returns a hypothesis test:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Three studies, none individually significant</span></span>
 <span><span class="fu"><a href="reference/fisher_combine.html">fisher_combine</a></span><span class="op">(</span><span class="fl">0.08</span>, <span class="fl">0.12</span>, <span class="fl">0.06</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Hypothesis test ( fisher_combined_test )</span></span>
+<span><span class="co">#&gt; Hypothesis test (fisher_combined_test)</span></span>
 <span><span class="co">#&gt; -----------------------------</span></span>
-<span><span class="co">#&gt; Test statistic:  14.9 </span></span>
-<span><span class="co">#&gt; P-value:  0.0209 </span></span>
-<span><span class="co">#&gt; Degrees of freedom:  6 </span></span>
-<span><span class="co">#&gt; Significant at 5% level:  TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt; Test statistic: 14.9188057945368</span></span>
+<span><span class="co">#&gt; P-value: 0.0208977112449541</span></span>
+<span><span class="co">#&gt; Degrees of freedom: 6</span></span>
+<span><span class="co">#&gt; Significant at 5% level: TRUE</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="transforming-tests-higher-order-functions">Transforming Tests (Higher-Order Functions)<a class="anchor" aria-label="anchor" href="#transforming-tests-higher-order-functions"></a>
 </h2>
 <p>Adjust p-values for multiple testing:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tests</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="reference/wald_test.html">wald_test</a></span><span class="op">(</span>estimate <span class="op">=</span> <span class="fl">2.5</span>, se <span class="op">=</span> <span class="fl">1.0</span><span class="op">)</span>,</span>
 <span>  <span class="fu"><a href="reference/wald_test.html">wald_test</a></span><span class="op">(</span>estimate <span class="op">=</span> <span class="fl">1.8</span>, se <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span>,</span>
@@ -173,17 +201,17 @@
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Original p-values</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">tests</span>, <span class="va">pval</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">tests</span>, <span class="va">pval</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0.0124 0.0455 0.0865</span></span>
 <span></span>
 <span><span class="co"># Bonferroni-adjusted</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="reference/adjust_pval.html">adjust_pval</a></span><span class="op">(</span><span class="va">tests</span>, method <span class="op">=</span> <span class="st">"bonferroni"</span><span class="op">)</span>, <span class="va">pval</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="fu"><a href="reference/adjust_pval.html">adjust_pval</a></span><span class="op">(</span><span class="va">tests</span>, method <span class="op">=</span> <span class="st">"bonferroni"</span><span class="op">)</span>, <span class="va">pval</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0.0373 0.1365 0.2594</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="duality-tests--confidence-intervals">Duality: Tests ↔︎ Confidence Intervals<a class="anchor" aria-label="anchor" href="#duality-tests--confidence-intervals"></a>
 </h2>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">w</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/wald_test.html">wald_test</a></span><span class="op">(</span>estimate <span class="op">=</span> <span class="fl">5.0</span>, se <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">w</span><span class="op">)</span></span>
 <span><span class="co">#&gt; lower upper </span></span>
@@ -196,7 +224,7 @@
 <h2 id="extending-the-package">Extending the Package<a class="anchor" aria-label="anchor" href="#extending-the-package"></a>
 </h2>
 <p>Create new test types by calling <code><a href="reference/hypothesis_test.html">hypothesis_test()</a></code>:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Custom chi-squared goodness-of-fit wrapper</span></span>
 <span><span class="va">chisq_gof</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">observed</span>, <span class="va">expected</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">stat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="op">(</span><span class="va">observed</span> <span class="op">-</span> <span class="va">expected</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span> <span class="op">/</span> <span class="va">expected</span><span class="op">)</span></span>
@@ -210,12 +238,12 @@
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="fu">chisq_gof</span><span class="op">(</span>observed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">45</span>, <span class="fl">35</span>, <span class="fl">20</span><span class="op">)</span>, expected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">40</span>, <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Hypothesis test ( chisq_gof_test )</span></span>
+<span><span class="co">#&gt; Hypothesis test (chisq_gof_test)</span></span>
 <span><span class="co">#&gt; -----------------------------</span></span>
-<span><span class="co">#&gt; Test statistic:  1.25 </span></span>
-<span><span class="co">#&gt; P-value:  0.535 </span></span>
-<span><span class="co">#&gt; Degrees of freedom:  2 </span></span>
-<span><span class="co">#&gt; Significant at 5% level:  FALSE</span></span></code></pre></div>
+<span><span class="co">#&gt; Test statistic: 1.25</span></span>
+<span><span class="co">#&gt; P-value: 0.53526142851899</span></span>
+<span><span class="co">#&gt; Degrees of freedom: 2</span></span>
+<span><span class="co">#&gt; Significant at 5% level: FALSE</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="learn-more">Learn More<a class="anchor" aria-label="anchor" href="#learn-more"></a>
@@ -229,6 +257,7 @@
     <div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
+<li><a href="https://cloud.r-project.org/package=hypothesize" class="external-link">View on CRAN</a></li>
 <li><a href="https://github.com/queelius/hypothesize/" class="external-link">Browse source code</a></li>
 <li><a href="https://github.com/queelius/hypothesize/issues" class="external-link">Report a bug</a></li>
 </ul>
@@ -237,12 +266,18 @@
 <div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li>
-<a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a>
-</li>
+<li><a href="LICENSE.html">Full license</a></li>
+<li><small><a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
 </ul>
 </div>
 
+<div class="community">
+<h2 data-toc-skip>Community</h2>
+<ul class="list-unstyled">
+<li><a href="CONTRIBUTING.html">Contributing guide</a></li>
+<li><a href="CODE_OF_CONDUCT.html">Code of conduct</a></li>
+</ul>
+</div>
 
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>

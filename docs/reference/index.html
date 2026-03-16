@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hypothesize</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.10.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.0</span>
       </span>
     </div>
 
@@ -32,9 +32,15 @@
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/boolean-algebra.html">Boolean Algebra of Hypothesis Tests</a>
+    </li>
+    <li>
       <a href="../articles/introduction.html">Introduction to hypothesize</a>
     </li>
   </ul></li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/queelius/hypothesize/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
@@ -62,17 +68,17 @@
         </td>
         <td><p>Adjust P-Value for Multiple Testing</p></td>
       </tr><tr><td>
+          <p><code><a href="complement_test.html">complement_test()</a></code> </p>
+        </td>
+        <td><p>Complement a Hypothesis Test (NOT)</p></td>
+      </tr><tr><td>
           <p><code><a href="confint.hypothesis_test.html">confint(<i>&lt;hypothesis_test&gt;</i>)</a></code> <code><a href="confint.hypothesis_test.html">confint(<i>&lt;wald_test&gt;</i>)</a></code> <code><a href="confint.hypothesis_test.html">confint(<i>&lt;z_test&gt;</i>)</a></code> </p>
         </td>
         <td><p>Confidence Interval from Hypothesis Test (Duality)</p></td>
       </tr><tr><td>
           <p><code><a href="dof.html">dof()</a></code> </p>
         </td>
-        <td><p>Generic method for extracting the degrees of freedom from a hypothesis test</p></td>
-      </tr><tr><td>
-          <p><code><a href="dof.hypothesis_test.html">dof(<i>&lt;hypothesis_test&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Degrees of freedom method for hypothesis tests</p></td>
+        <td><p>Extract the degrees of freedom from a hypothesis test</p></td>
       </tr><tr><td>
           <p><code><a href="fisher_combine.html">fisher_combine()</a></code> </p>
         </td>
@@ -82,17 +88,29 @@
         </td>
         <td><p>Create a Hypothesis Test Object</p></td>
       </tr><tr><td>
+          <p><code><a href="intersection_test.html">intersection_test()</a></code> </p>
+        </td>
+        <td><p>Intersection Test (AND)</p></td>
+      </tr><tr><td>
+          <p><code><a href="invert_test.html">invert_test()</a></code> </p>
+        </td>
+        <td><p>Invert a Test into a Confidence Set (Test-Confidence Duality)</p></td>
+      </tr><tr><td>
           <p><code><a href="is_significant_at.html">is_significant_at()</a></code> </p>
         </td>
-        <td><p>Generic method for checking if a hypothesis test is significant at a given significance level.</p></td>
+        <td><p>Check if a hypothesis test is significant at a given level</p></td>
       </tr><tr><td>
-          <p><code><a href="is_significant_at.hypothesis_test.html">is_significant_at(<i>&lt;hypothesis_test&gt;</i>)</a></code> </p>
+          <p><code><a href="lower.html">lower()</a></code> </p>
         </td>
-        <td><p>Significance test for the hypothesis_test class.</p></td>
+        <td><p>Extract the lower bound of a confidence set</p></td>
       </tr><tr><td>
           <p><code><a href="lrt.html">lrt()</a></code> </p>
         </td>
         <td><p>Likelihood Ratio Test</p></td>
+      </tr><tr><td>
+          <p><code><a href="print.confidence_set.html">print(<i>&lt;confidence_set&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Print method for confidence sets</p></td>
       </tr><tr><td>
           <p><code><a href="print.hypothesis_test.html">print(<i>&lt;hypothesis_test&gt;</i>)</a></code> </p>
         </td>
@@ -100,19 +118,23 @@
       </tr><tr><td>
           <p><code><a href="pval.html">pval()</a></code> </p>
         </td>
-        <td><p>Generic method for extracting the p-value from a hypothesis test</p></td>
+        <td><p>Extract the p-value from a hypothesis test</p></td>
       </tr><tr><td>
-          <p><code><a href="pval.hypothesis_test.html">pval(<i>&lt;hypothesis_test&gt;</i>)</a></code> </p>
+          <p><code><a href="score_test.html">score_test()</a></code> </p>
         </td>
-        <td><p>p-value method for hypothesis tests</p></td>
+        <td><p>Score Test (Lagrange Multiplier Test)</p></td>
       </tr><tr><td>
           <p><code><a href="test_stat.html">test_stat()</a></code> </p>
         </td>
-        <td><p>Generic method for extracting the test statistic from a hypothesis test</p></td>
+        <td><p>Extract the test statistic from a hypothesis test</p></td>
       </tr><tr><td>
-          <p><code><a href="test_stat.hypothesis_test.html">test_stat(<i>&lt;hypothesis_test&gt;</i>)</a></code> </p>
+          <p><code><a href="union_test.html">union_test()</a></code> </p>
         </td>
-        <td><p>Test statistic method for hypothesis tests</p></td>
+        <td><p>Union Test (OR via De Morgan's Law)</p></td>
+      </tr><tr><td>
+          <p><code><a href="upper.html">upper()</a></code> </p>
+        </td>
+        <td><p>Extract the upper bound of a confidence set</p></td>
       </tr><tr><td>
           <p><code><a href="wald_test.html">wald_test()</a></code> </p>
         </td>

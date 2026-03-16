@@ -18,7 +18,7 @@ omnibus test using Fisher's method."><!-- mathjax --><script src="https://cdnjs.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hypothesize</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.10.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.0</span>
       </span>
     </div>
 
@@ -33,9 +33,15 @@ omnibus test using Fisher's method."><!-- mathjax --><script src="https://cdnjs.
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/boolean-algebra.html">Boolean Algebra of Hypothesis Tests</a>
+    </li>
+    <li>
       <a href="../articles/introduction.html">Introduction to hypothesize</a>
     </li>
   </ul></li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/queelius/hypothesize/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
@@ -149,12 +155,12 @@ methods (<code><a href="pval.html">pval()</a></code>, <code><a href="test_stat.h
 <span class="r-in"><span><span class="co"># Combine using raw p-values</span></span></span>
 <span class="r-in"><span><span class="va">combined</span> <span class="op">&lt;-</span> <span class="fu">fisher_combine</span><span class="op">(</span><span class="fl">0.08</span>, <span class="fl">0.12</span>, <span class="fl">0.04</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">combined</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hypothesis test ( fisher_combined_test )</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hypothesis test (fisher_combined_test)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -----------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Test statistic:  15.72974 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> P-value:  0.01528049 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Degrees of freedom:  6 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Significant at 5% level:  TRUE </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Test statistic: 15.7297360107531</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> P-value: 0.0152804898725278</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Degrees of freedom: 6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Significant at 5% level: TRUE</span>
 <span class="r-in"><span><span class="fu"><a href="is_significant_at.html">is_significant_at</a></span><span class="op">(</span><span class="va">combined</span>, <span class="fl">0.05</span><span class="op">)</span>  <span class="co"># Stronger evidence together</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 <span class="r-in"><span></span></span>
@@ -164,12 +170,12 @@ methods (<code><a href="pval.html">pval()</a></code>, <code><a href="test_stat.h
 <span class="r-in"><span><span class="va">t3</span> <span class="op">&lt;-</span> <span class="fu"><a href="z_test.html">z_test</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">30</span>, mean <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span>, mu0 <span class="op">=</span> <span class="fl">0</span>, sigma <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">fisher_combine</span><span class="op">(</span><span class="va">t1</span>, <span class="va">t2</span>, <span class="va">t3</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hypothesis test ( fisher_combined_test )</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hypothesis test (fisher_combined_test)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -----------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Test statistic:  20.14234 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> P-value:  0.002612353 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Degrees of freedom:  6 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Significant at 5% level:  TRUE </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Test statistic: 20.0952383449363</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> P-value: 0.00266333421941262</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Degrees of freedom: 6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Significant at 5% level: TRUE</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># The result is itself a hypothesis_test, so it composes</span></span></span>
 <span class="r-in"><span><span class="co"># (though combining non-independent tests is invalid)</span></span></span>

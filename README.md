@@ -51,12 +51,12 @@ is_significant_at(w, 0.05) # significance check
 set.seed(42)
 x <- rnorm(30, mean = 105, sd = 15)
 z_test(x, mu0 = 100, sigma = 15)
-#> Hypothesis test ( z_test )
+#> Hypothesis test (z_test)
 #> -----------------------------
-#> Test statistic:  2.2 
-#> P-value:  0.0277 
-#> Degrees of freedom:  Inf 
-#> Significant at 5% level:  TRUE
+#> Test statistic: 2.20140742409738
+#> P-value: 0.0277071938999057
+#> Degrees of freedom: Inf
+#> Significant at 5% level: TRUE
 ```
 
 ### Wald Test (general parameters)
@@ -64,25 +64,35 @@ z_test(x, mu0 = 100, sigma = 15)
 ``` r
 # Test if a regression coefficient equals zero
 wald_test(estimate = 1.8, se = 0.7)
-#> Hypothesis test ( wald_test )
+#> Hypothesis test (wald_test)
 #> -----------------------------
-#> Test statistic:  6.61 
-#> P-value:  0.0101 
-#> Degrees of freedom:  1 
-#> Significant at 5% level:  TRUE
+#> Test statistic: 6.61224489795918
+#> P-value: 0.0101279905493907
+#> Degrees of freedom: 1
+#> Significant at 5% level: TRUE
 ```
 
 ### Likelihood Ratio Test (model comparison)
 
 ``` r
-# Compare nested models
+# From raw log-likelihoods
 lrt(null_loglik = -150, alt_loglik = -140, dof = 3)
-#> Hypothesis test ( likelihood_ratio_test )
+#> Hypothesis test (likelihood_ratio_test)
 #> -----------------------------
-#> Test statistic:  20 
-#> P-value:  0.00017 
-#> Degrees of freedom:  3 
-#> Significant at 5% level:  TRUE
+#> Test statistic: 20
+#> P-value: 0.000169742435552826
+#> Degrees of freedom: 3
+#> Significant at 5% level: TRUE
+
+# Or from fitted models — dof derived automatically
+x <- 1:50; y <- 2 + 3 * x + rnorm(50, sd = 5)
+lrt(logLik(lm(y ~ 1)), logLik(lm(y ~ x)))
+#> Hypothesis test (likelihood_ratio_test)
+#> -----------------------------
+#> Test statistic: 222.696853179322
+#> P-value: 2.33424827983589e-50
+#> Degrees of freedom: 1
+#> Significant at 5% level: TRUE
 ```
 
 ## Combining Tests (Closure Property)
@@ -93,12 +103,12 @@ test:
 ``` r
 # Three studies, none individually significant
 fisher_combine(0.08, 0.12, 0.06)
-#> Hypothesis test ( fisher_combined_test )
+#> Hypothesis test (fisher_combined_test)
 #> -----------------------------
-#> Test statistic:  14.9 
-#> P-value:  0.0209 
-#> Degrees of freedom:  6 
-#> Significant at 5% level:  TRUE
+#> Test statistic: 14.9188057945368
+#> P-value: 0.0208977112449541
+#> Degrees of freedom: 6
+#> Significant at 5% level: TRUE
 ```
 
 ## Transforming Tests (Higher-Order Functions)
@@ -151,12 +161,12 @@ chisq_gof <- function(observed, expected) {
 }
 
 chisq_gof(observed = c(45, 35, 20), expected = c(40, 40, 20))
-#> Hypothesis test ( chisq_gof_test )
+#> Hypothesis test (chisq_gof_test)
 #> -----------------------------
-#> Test statistic:  1.25 
-#> P-value:  0.535 
-#> Degrees of freedom:  2 
-#> Significant at 5% level:  FALSE
+#> Test statistic: 1.25
+#> P-value: 0.53526142851899
+#> Degrees of freedom: 2
+#> Significant at 5% level: FALSE
 ```
 
 ## Learn More

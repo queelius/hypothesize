@@ -94,19 +94,21 @@ test_stat(w)   # z² (the Wald statistic)
 
 ### The Likelihood Ratio Test: Comparing Models
 
-The LRT compares nested models by examining the ratio of their likelihoods:
+The LRT compares nested models by examining the ratio of their likelihoods.
+You can pass raw log-likelihood values, or use standard `logLik` objects
+from any fitted model:
 
 ```{r}
-# Suppose we fit two models:
-# Null model (simpler): log-likelihood = -250
-# Alt model (complex):  log-likelihood = -240
-# The alt model has 3 extra parameters
-
+# From raw log-likelihoods (specify dof manually)
 test <- lrt(null_loglik = -250, alt_loglik = -240, dof = 3)
 test
 
-# Is the more complex model justified?
-is_significant_at(test, 0.05)
+# Or from fitted models — dof is derived automatically
+x <- 1:50
+y <- 2 + 3 * x + rnorm(50, sd = 5)
+m0 <- lm(y ~ 1)       # intercept only
+m1 <- lm(y ~ x)       # add slope
+lrt(logLik(m0), logLik(m1))
 ```
 
 ## Duality: Tests and Confidence Intervals

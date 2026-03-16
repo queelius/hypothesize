@@ -19,7 +19,7 @@ wald_test(), and z_test()."><!-- mathjax --><script src="https://cdnjs.cloudflar
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hypothesize</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.10.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.0</span>
       </span>
     </div>
 
@@ -34,9 +34,15 @@ wald_test(), and z_test()."><!-- mathjax --><script src="https://cdnjs.cloudflar
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/boolean-algebra.html">Boolean Algebra of Hypothesis Tests</a>
+    </li>
+    <li>
       <a href="../articles/introduction.html">Introduction to hypothesize</a>
     </li>
   </ul></li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/queelius/hypothesize/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
@@ -140,12 +146,12 @@ and p-value.</p></li>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Direct construction (usually use specific constructors instead)</span></span></span>
 <span class="r-in"><span><span class="va">test</span> <span class="op">&lt;-</span> <span class="fu">hypothesis_test</span><span class="op">(</span>stat <span class="op">=</span> <span class="fl">1.96</span>, p.value <span class="op">=</span> <span class="fl">0.05</span>, dof <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">test</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hypothesis test ( hypothesis_test )</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hypothesis test (hypothesis_test)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -----------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Test statistic:  1.96 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> P-value:  0.05 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Degrees of freedom:  1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Significant at 5% level:  FALSE </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Test statistic: 1.96</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> P-value: 0.05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Degrees of freedom: 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Significant at 5% level: FALSE</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Extract components using the API</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="pval.html">pval</a></span><span class="op">(</span><span class="va">test</span><span class="op">)</span></span></span>

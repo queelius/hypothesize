@@ -18,7 +18,7 @@ tests, returning adjusted test object(s)."><!-- mathjax --><script src="https://
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hypothesize</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.10.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.0</span>
       </span>
     </div>
 
@@ -33,9 +33,15 @@ tests, returning adjusted test object(s)."><!-- mathjax --><script src="https://
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/boolean-algebra.html">Boolean Algebra of Hypothesis Tests</a>
+    </li>
+    <li>
       <a href="../articles/introduction.html">Introduction to hypothesize</a>
     </li>
   </ul></li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/queelius/hypothesize/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
@@ -187,15 +193,15 @@ dependence.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># BH (FDR) correction - n is inferred from list length</span></span></span>
 <span class="r-in"><span><span class="va">adjusted</span> <span class="op">&lt;-</span> <span class="fu">adjust_pval</span><span class="op">(</span><span class="va">tests</span>, method <span class="op">=</span> <span class="st">"BH"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">adjusted</span>, <span class="va">pval</span><span class="op">)</span>  <span class="co"># Adjusted p-values</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">adjusted</span>, <span class="va">pval</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span>  <span class="co"># Adjusted p-values</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.005334152 0.024592608 0.374062797</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Compare methods</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">tests</span>, <span class="va">pval</span><span class="op">)</span>  <span class="co"># Original</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">tests</span>, <span class="va">pval</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span>  <span class="co"># Original</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.001778051 0.016395072 0.374062797</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu">adjust_pval</span><span class="op">(</span><span class="va">tests</span>, method <span class="op">=</span> <span class="st">"bonferroni"</span><span class="op">)</span>, <span class="va">pval</span><span class="op">)</span>  <span class="co"># Conservative</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="fu">adjust_pval</span><span class="op">(</span><span class="va">tests</span>, method <span class="op">=</span> <span class="st">"bonferroni"</span><span class="op">)</span>, <span class="va">pval</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.005334152 0.049185216 1.000000000</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu">adjust_pval</span><span class="op">(</span><span class="va">tests</span>, method <span class="op">=</span> <span class="st">"BH"</span><span class="op">)</span>, <span class="va">pval</span><span class="op">)</span>  <span class="co"># Less conservative</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="fu">adjust_pval</span><span class="op">(</span><span class="va">tests</span>, method <span class="op">=</span> <span class="st">"BH"</span><span class="op">)</span>, <span class="va">pval</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.005334152 0.024592608 0.374062797</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

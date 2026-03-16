@@ -18,7 +18,7 @@ population standard deviation is known."><!-- mathjax --><script src="https://cd
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hypothesize</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.10.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.0</span>
       </span>
     </div>
 
@@ -33,9 +33,15 @@ population standard deviation is known."><!-- mathjax --><script src="https://cd
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu"><li>
+      <a href="../articles/boolean-algebra.html">Boolean Algebra of Hypothesis Tests</a>
+    </li>
+    <li>
       <a href="../articles/introduction.html">Introduction to hypothesize</a>
     </li>
   </ul></li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="https://github.com/queelius/hypothesize/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
@@ -161,21 +167,21 @@ The Wald test generalizes this to any asymptotically normal estimator.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Two-sided test: H0: mu = 1000 vs H1: mu != 1000</span></span></span>
 <span class="r-in"><span><span class="fu">z_test</span><span class="op">(</span><span class="va">lifetimes</span>, mu0 <span class="op">=</span> <span class="fl">1000</span>, sigma <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hypothesis test ( z_test )</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hypothesis test (z_test)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -----------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Test statistic:  -0.2545584 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> P-value:  0.7990642 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Degrees of freedom:  Inf </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Significant at 5% level:  FALSE </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Test statistic: -0.254558441227159</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> P-value: 0.799064160981303</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Degrees of freedom: Inf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Significant at 5% level: FALSE</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># One-sided test: are bulbs lasting less than claimed?</span></span></span>
 <span class="r-in"><span><span class="fu">z_test</span><span class="op">(</span><span class="va">lifetimes</span>, mu0 <span class="op">=</span> <span class="fl">1000</span>, sigma <span class="op">=</span> <span class="fl">100</span>, alternative <span class="op">=</span> <span class="st">"less"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Hypothesis test ( z_test )</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Hypothesis test (z_test)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -----------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Test statistic:  -0.2545584 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> P-value:  0.3995321 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Degrees of freedom:  Inf </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Significant at 5% level:  FALSE </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Test statistic: -0.254558441227159</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> P-value: 0.399532080490651</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Degrees of freedom: Inf</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Significant at 5% level: FALSE</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

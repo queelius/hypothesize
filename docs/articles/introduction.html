@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">hypothesize</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.10.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.11.0</span>
       </span>
     </div>
 
@@ -49,9 +49,15 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/boolean-algebra.html">Boolean Algebra of Hypothesis Tests</a>
+    </li>
+    <li>
       <a href="../articles/introduction.html">Introduction to hypothesize</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -142,12 +148,12 @@ deviation is known:</p>
 <span><span class="co"># Test H0: mu = 100 vs H1: mu != 100</span></span>
 <span><span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/z_test.html">z_test</a></span><span class="op">(</span><span class="va">weights</span>, mu0 <span class="op">=</span> <span class="fl">100</span>, sigma <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="va">z</span></span>
-<span><span class="co">#&gt; Hypothesis test ( z_test )</span></span>
+<span><span class="co">#&gt; Hypothesis test (z_test)</span></span>
 <span><span class="co">#&gt; -----------------------------</span></span>
-<span><span class="co">#&gt; Test statistic:  2.566556 </span></span>
-<span><span class="co">#&gt; P-value:  0.01027141 </span></span>
-<span><span class="co">#&gt; Degrees of freedom:  Inf </span></span>
-<span><span class="co">#&gt; Significant at 5% level:  TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt; Test statistic: 2.56655579576749</span></span>
+<span><span class="co">#&gt; P-value: 0.0102714098873407</span></span>
+<span><span class="co">#&gt; Degrees of freedom: Inf</span></span>
+<span><span class="co">#&gt; Significant at 5% level: TRUE</span></span></code></pre></div>
 <p>We can extract components:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/test_stat.html">test_stat</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span>   <span class="co"># The z-statistic</span></span>
@@ -168,12 +174,12 @@ whether the true parameter equals a hypothesized value:</p>
 <span><span class="co"># Test H0: beta = 0 (no effect) vs H1: beta != 0</span></span>
 <span><span class="va">w</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wald_test.html">wald_test</a></span><span class="op">(</span>estimate <span class="op">=</span> <span class="fl">2.3</span>, se <span class="op">=</span> <span class="fl">0.8</span>, null_value <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
 <span><span class="va">w</span></span>
-<span><span class="co">#&gt; Hypothesis test ( wald_test )</span></span>
+<span><span class="co">#&gt; Hypothesis test (wald_test)</span></span>
 <span><span class="co">#&gt; -----------------------------</span></span>
-<span><span class="co">#&gt; Test statistic:  8.265625 </span></span>
-<span><span class="co">#&gt; P-value:  0.004040275 </span></span>
-<span><span class="co">#&gt; Degrees of freedom:  1 </span></span>
-<span><span class="co">#&gt; Significant at 5% level:  TRUE</span></span>
+<span><span class="co">#&gt; Test statistic: 8.265625</span></span>
+<span><span class="co">#&gt; P-value: 0.00404027497989201</span></span>
+<span><span class="co">#&gt; Degrees of freedom: 1</span></span>
+<span><span class="co">#&gt; Significant at 5% level: TRUE</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/is_significant_at.html">is_significant_at</a></span><span class="op">(</span><span class="va">w</span>, <span class="fl">0.05</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
@@ -189,25 +195,31 @@ with 1 df:</p>
 <h3 id="the-likelihood-ratio-test-comparing-models">The Likelihood Ratio Test: Comparing Models<a class="anchor" aria-label="anchor" href="#the-likelihood-ratio-test-comparing-models"></a>
 </h3>
 <p>The LRT compares nested models by examining the ratio of their
-likelihoods:</p>
+likelihoods. You can pass raw log-likelihood values, or use standard
+<code>logLik</code> objects from any fitted model:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Suppose we fit two models:</span></span>
-<span><span class="co"># Null model (simpler): log-likelihood = -250</span></span>
-<span><span class="co"># Alt model (complex):  log-likelihood = -240</span></span>
-<span><span class="co"># The alt model has 3 extra parameters</span></span>
-<span></span>
+<code class="sourceCode R"><span><span class="co"># From raw log-likelihoods (specify dof manually)</span></span>
 <span><span class="va">test</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lrt.html">lrt</a></span><span class="op">(</span>null_loglik <span class="op">=</span> <span class="op">-</span><span class="fl">250</span>, alt_loglik <span class="op">=</span> <span class="op">-</span><span class="fl">240</span>, dof <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="va">test</span></span>
-<span><span class="co">#&gt; Hypothesis test ( likelihood_ratio_test )</span></span>
+<span><span class="co">#&gt; Hypothesis test (likelihood_ratio_test)</span></span>
 <span><span class="co">#&gt; -----------------------------</span></span>
-<span><span class="co">#&gt; Test statistic:  20 </span></span>
-<span><span class="co">#&gt; P-value:  0.0001697424 </span></span>
-<span><span class="co">#&gt; Degrees of freedom:  3 </span></span>
-<span><span class="co">#&gt; Significant at 5% level:  TRUE</span></span>
+<span><span class="co">#&gt; Test statistic: 20</span></span>
+<span><span class="co">#&gt; P-value: 0.000169742435552826</span></span>
+<span><span class="co">#&gt; Degrees of freedom: 3</span></span>
+<span><span class="co">#&gt; Significant at 5% level: TRUE</span></span>
 <span></span>
-<span><span class="co"># Is the more complex model justified?</span></span>
-<span><span class="fu"><a href="../reference/is_significant_at.html">is_significant_at</a></span><span class="op">(</span><span class="va">test</span>, <span class="fl">0.05</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<span><span class="co"># Or from fitted models — dof is derived automatically</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">50</span></span>
+<span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">3</span> <span class="op">*</span> <span class="va">x</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">50</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="va">m0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="fl">1</span><span class="op">)</span>       <span class="co"># intercept only</span></span>
+<span><span class="va">m1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span><span class="op">)</span>       <span class="co"># add slope</span></span>
+<span><span class="fu"><a href="../reference/lrt.html">lrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/logLik.html" class="external-link">logLik</a></span><span class="op">(</span><span class="va">m0</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/stats/logLik.html" class="external-link">logLik</a></span><span class="op">(</span><span class="va">m1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Hypothesis test (likelihood_ratio_test)</span></span>
+<span><span class="co">#&gt; -----------------------------</span></span>
+<span><span class="co">#&gt; Test statistic: 222.696853179322</span></span>
+<span><span class="co">#&gt; P-value: 2.33424827983589e-50</span></span>
+<span><span class="co">#&gt; Degrees of freedom: 1</span></span>
+<span><span class="co">#&gt; Significant at 5% level: TRUE</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -254,12 +266,12 @@ combining hypothesis tests yields a hypothesis test.</p>
 <span></span>
 <span><span class="va">combined</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fisher_combine.html">fisher_combine</a></span><span class="op">(</span><span class="va">p1</span>, <span class="va">p2</span>, <span class="va">p3</span><span class="op">)</span></span>
 <span><span class="va">combined</span></span>
-<span><span class="co">#&gt; Hypothesis test ( fisher_combined_test )</span></span>
+<span><span class="co">#&gt; Hypothesis test (fisher_combined_test)</span></span>
 <span><span class="co">#&gt; -----------------------------</span></span>
-<span><span class="co">#&gt; Test statistic:  14.91881 </span></span>
-<span><span class="co">#&gt; P-value:  0.02089771 </span></span>
-<span><span class="co">#&gt; Degrees of freedom:  6 </span></span>
-<span><span class="co">#&gt; Significant at 5% level:  TRUE</span></span>
+<span><span class="co">#&gt; Test statistic: 14.9188057945368</span></span>
+<span><span class="co">#&gt; P-value: 0.0208977112449541</span></span>
+<span><span class="co">#&gt; Degrees of freedom: 6</span></span>
+<span><span class="co">#&gt; Significant at 5% level: TRUE</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/is_significant_at.html">is_significant_at</a></span><span class="op">(</span><span class="va">combined</span>, <span class="fl">0.05</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
@@ -270,12 +282,12 @@ combining hypothesis tests yields a hypothesis test.</p>
 <span><span class="va">t3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/wald_test.html">wald_test</a></span><span class="op">(</span>estimate <span class="op">=</span> <span class="fl">1.5</span>, se <span class="op">=</span> <span class="fl">1.0</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/fisher_combine.html">fisher_combine</a></span><span class="op">(</span><span class="va">t1</span>, <span class="va">t2</span>, <span class="va">t3</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Hypothesis test ( fisher_combined_test )</span></span>
+<span><span class="co">#&gt; Hypothesis test (fisher_combined_test)</span></span>
 <span><span class="co">#&gt; -----------------------------</span></span>
-<span><span class="co">#&gt; Test statistic:  12.07678 </span></span>
-<span><span class="co">#&gt; P-value:  0.06027762 </span></span>
-<span><span class="co">#&gt; Degrees of freedom:  6 </span></span>
-<span><span class="co">#&gt; Significant at 5% level:  FALSE</span></span></code></pre></div>
+<span><span class="co">#&gt; Test statistic: 12.0767833215837</span></span>
+<span><span class="co">#&gt; P-value: 0.0602776209085376</span></span>
+<span><span class="co">#&gt; Degrees of freedom: 6</span></span>
+<span><span class="co">#&gt; Significant at 5% level: FALSE</span></span></code></pre></div>
 <p>Because the result is itself a <code>hypothesis_test</code>, you can
 use all the same methods on it:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
@@ -304,17 +316,17 @@ adjusting their p-values:</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Original p-values</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">tests</span>, <span class="va">pval</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">tests</span>, <span class="va">pval</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0.01241933 0.04550026 0.08647627 0.26058903 0.05625037</span></span>
 <span></span>
 <span><span class="co"># Bonferroni-adjusted p-values</span></span>
 <span><span class="va">adjusted</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/adjust_pval.html">adjust_pval</a></span><span class="op">(</span><span class="va">tests</span>, method <span class="op">=</span> <span class="st">"bonferroni"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">adjusted</span>, <span class="va">pval</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">adjusted</span>, <span class="va">pval</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0.06209665 0.22750132 0.43238133 1.00000000 0.28125183</span></span>
 <span></span>
 <span><span class="co"># Less conservative: Benjamini-Hochberg (FDR control)</span></span>
 <span><span class="va">adjusted_bh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/adjust_pval.html">adjust_pval</a></span><span class="op">(</span><span class="va">tests</span>, method <span class="op">=</span> <span class="st">"BH"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">adjusted_bh</span>, <span class="va">pval</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">adjusted_bh</span>, <span class="va">pval</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0.06209665 0.09375061 0.10809533 0.26058903 0.09375061</span></span></code></pre></div>
 <p>The adjusted tests retain all original properties:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
@@ -331,12 +343,12 @@ naturally:</p>
 <code class="sourceCode R"><span><span class="co"># First adjust, then combine</span></span>
 <span><span class="va">adjusted</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/adjust_pval.html">adjust_pval</a></span><span class="op">(</span><span class="va">tests</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>, method <span class="op">=</span> <span class="st">"bonferroni"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/fisher_combine.html">fisher_combine</a></span><span class="op">(</span><span class="va">adjusted</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="va">adjusted</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span>, <span class="va">adjusted</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Hypothesis test ( fisher_combined_test )</span></span>
+<span><span class="co">#&gt; Hypothesis test (fisher_combined_test)</span></span>
 <span><span class="co">#&gt; -----------------------------</span></span>
-<span><span class="co">#&gt; Test statistic:  13.26117 </span></span>
-<span><span class="co">#&gt; P-value:  0.03907096 </span></span>
-<span><span class="co">#&gt; Degrees of freedom:  6 </span></span>
-<span><span class="co">#&gt; Significant at 5% level:  TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt; Test statistic: 13.2611733477767</span></span>
+<span><span class="co">#&gt; P-value: 0.0390709637868279</span></span>
+<span><span class="co">#&gt; Degrees of freedom: 6</span></span>
+<span><span class="co">#&gt; Significant at 5% level: TRUE</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="extending-the-package">Extending the Package<a class="anchor" aria-label="anchor" href="#extending-the-package"></a>
@@ -366,12 +378,12 @@ new test types:</p>
 <span>  expected <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">40</span>, <span class="fl">40</span>, <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">result</span></span>
-<span><span class="co">#&gt; Hypothesis test ( chisq_gof_test )</span></span>
+<span><span class="co">#&gt; Hypothesis test (chisq_gof_test)</span></span>
 <span><span class="co">#&gt; -----------------------------</span></span>
-<span><span class="co">#&gt; Test statistic:  1.25 </span></span>
-<span><span class="co">#&gt; P-value:  0.5352614 </span></span>
-<span><span class="co">#&gt; Degrees of freedom:  2 </span></span>
-<span><span class="co">#&gt; Significant at 5% level:  FALSE</span></span>
+<span><span class="co">#&gt; Test statistic: 1.25</span></span>
+<span><span class="co">#&gt; P-value: 0.53526142851899</span></span>
+<span><span class="co">#&gt; Degrees of freedom: 2</span></span>
+<span><span class="co">#&gt; Significant at 5% level: FALSE</span></span>
 <span></span>
 <span><span class="co"># It works with all the standard functions</span></span>
 <span><span class="fu"><a href="../reference/pval.html">pval</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
@@ -404,8 +416,8 @@ extensible framework for hypothesis testing:</p>
 </tr>
 <tr class="even">
 <td>
-<code><a href="../reference/z_test.html">z_test()</a></code>, <code><a href="../reference/wald_test.html">wald_test()</a></code>,
-<code><a href="../reference/lrt.html">lrt()</a></code>
+<code><a href="../reference/z_test.html">z_test()</a></code>, <code><a href="../reference/wald_test.html">wald_test()</a></code>, <code><a href="../reference/lrt.html">lrt()</a></code>,
+<code><a href="../reference/score_test.html">score_test()</a></code>
 </td>
 <td>Primitive tests</td>
 <td>Building blocks</td>
@@ -424,19 +436,32 @@ extensible framework for hypothesis testing:</p>
 <td>Closure property</td>
 </tr>
 <tr class="odd">
-<td><code><a href="../reference/adjust_pval.html">adjust_pval()</a></code></td>
+<td>
+<code><a href="../reference/intersection_test.html">intersection_test()</a></code>, <code><a href="../reference/union_test.html">union_test()</a></code>
+</td>
+<td>Boolean AND/OR</td>
+<td>Closure property</td>
+</tr>
+<tr class="even">
+<td>
+<code><a href="../reference/adjust_pval.html">adjust_pval()</a></code>, <code><a href="../reference/complement_test.html">complement_test()</a></code>
+</td>
 <td>Transform tests</td>
 <td>Higher-order functions</td>
 </tr>
-<tr class="even">
-<td><code><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint()</a></code></td>
-<td>Extract CI</td>
+<tr class="odd">
+<td>
+<code><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint()</a></code>, <code><a href="../reference/invert_test.html">invert_test()</a></code>
+</td>
+<td>Extract CI / confidence set</td>
 <td>Duality</td>
 </tr>
 </tbody>
 </table>
 <p>This design makes hypothesis testing composable, extensible, and easy
-to reason about.</p>
+to reason about. See <code><a href="../articles/boolean-algebra.html">vignette("boolean-algebra")</a></code> for the
+full Boolean algebra of hypothesis tests, De Morgan’s laws, and the
+test-confidence duality.</p>
 </div>
   </div>
 
