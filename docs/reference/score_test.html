@@ -121,12 +121,12 @@ reference but not used in computation.</p></dd>
 alongside the Wald test (<code><a href="wald_test.html">wald_test()</a></code>) and the likelihood ratio test
 (<code><a href="lrt.html">lrt()</a></code>). All three are asymptotically equivalent under \(H_0\), but
 they differ in what they require:</p>
-<ul><li><p><strong>Wald test</strong>: Needs the MLE and its standard error — requires
+<ul><li><p><strong>Wald test</strong>: Needs the MLE and its standard error – requires
 fitting the alternative model.</p></li>
-<li><p><strong>LRT</strong>: Needs maximized log-likelihoods under both models —
+<li><p><strong>LRT</strong>: Needs maximized log-likelihoods under both models –
 requires fitting both.</p></li>
 <li><p><strong>Score test</strong>: Needs only the score and information at
-\(\theta_0\) — requires fitting only the null model.</p></li>
+\(\theta_0\) – requires fitting only the null model.</p></li>
 </ul><p>This makes the score test computationally attractive when the null model
 is simple but the alternative is expensive to fit.</p>
 <p>For the univariate case:

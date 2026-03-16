@@ -84,13 +84,14 @@ lrt(null_loglik = -150, alt_loglik = -140, dof = 3)
 #> Degrees of freedom: 3
 #> Significant at 5% level: TRUE
 
-# Or from fitted models — dof derived automatically
+# Or from fitted models -- dof derived automatically
+set.seed(42)
 x <- 1:50; y <- 2 + 3 * x + rnorm(50, sd = 5)
 lrt(logLik(lm(y ~ 1)), logLik(lm(y ~ x)))
 #> Hypothesis test (likelihood_ratio_test)
 #> -----------------------------
-#> Test statistic: 222.696853179322
-#> P-value: 2.33424827983589e-50
+#> Test statistic: 203.015531891017
+#> P-value: 4.58985868918993e-46
 #> Degrees of freedom: 1
 #> Significant at 5% level: TRUE
 ```

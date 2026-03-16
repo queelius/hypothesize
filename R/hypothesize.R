@@ -254,6 +254,7 @@ is_significant_at.hypothesis_test <- function(x, alpha, ...) {
 #' lrt(ll_null, ll_alt)  # dof = 5 - 2 = 3
 #'
 #' # With real models (any model supporting stats::logLik)
+#' set.seed(42)
 #' x <- 1:50
 #' y <- 2 + 3 * x + rnorm(50)
 #' m0 <- lm(y ~ 1)
@@ -535,12 +536,12 @@ wald_test <- function(estimate, se = NULL, vcov = NULL, null_value = 0) {
 #' they differ in what they require:
 #'
 #' \itemize{
-#'   \item **Wald test**: Needs the MLE and its standard error — requires
+#'   \item **Wald test**: Needs the MLE and its standard error -- requires
 #'     fitting the alternative model.
-#'   \item **LRT**: Needs maximized log-likelihoods under both models —
+#'   \item **LRT**: Needs maximized log-likelihoods under both models --
 #'     requires fitting both.
 #'   \item **Score test**: Needs only the score and information at
-#'     \eqn{\theta_0} — requires fitting only the null model.
+#'     \eqn{\theta_0} -- requires fitting only the null model.
 #' }
 #'
 #' This makes the score test computationally attractive when the null model
@@ -675,6 +676,7 @@ score_test <- function(score, fisher_info, null_value = NULL) {
 #' # Or combine hypothesis_test objects directly
 #' t1 <- wald_test(estimate = 1.5, se = 0.9)
 #' t2 <- wald_test(estimate = 0.8, se = 0.5)
+#' set.seed(1)
 #' t3 <- z_test(rnorm(30, mean = 0.3), mu0 = 0, sigma = 1)
 #'
 #' fisher_combine(t1, t2, t3)
@@ -765,6 +767,7 @@ fisher_combine <- function(...) {
 #' wald_test(estimate = 2.5, se = 0.8, null_value = 2.5)
 #'
 #' # z-test also supports confint
+#' set.seed(1)
 #' z <- z_test(rnorm(50, mean = 10, sd = 2), mu0 = 9, sigma = 2)
 #' confint(z)
 #'
@@ -1002,12 +1005,12 @@ complement_test <- function(test) {
 #' component tests reject.
 #'
 #' @details
-#' The p-value is \eqn{\max(p_1, \ldots, p_k)} — the intersection rejects
+#' The p-value is \eqn{\max(p_1, \ldots, p_k)} --the intersection rejects
 #' at level \eqn{\alpha} if and only if every component p-value is below
 #' \eqn{\alpha}.
 #'
 #' This is the intersection-union test (IUT; Berger, 1982). No multiplicity
-#' correction is needed — the max is inherently conservative.
+#' correction is needed --the max is inherently conservative.
 #'
 #' @section Use Case --- Bioequivalence:
 #' Bioequivalence requires showing a drug's effect is both "not too low"
@@ -1127,7 +1130,7 @@ union_test <- function(...) {
     else stop("Arguments must be hypothesis_test objects or numeric p-values")
   }, numeric(1))
 
-  # OR = min(p) — equivalent to De Morgan's NOT(AND(NOT(p_1), ..., NOT(p_k)))
+  # OR = min(p) --equivalent to De Morgan's NOT(AND(NOT(p_1), ..., NOT(p_k)))
   # but computed directly to avoid floating-point cancellation at extreme p-values
   p.value <- min(pvals)
 
@@ -1153,7 +1156,7 @@ union_test <- function(...) {
 #' level \eqn{\alpha}. This function makes that duality operational.
 #'
 #' `invert_test` is the most general confidence set constructor in the
-#' package. Any test — including user-defined tests — can be inverted. The
+#' package. Any test --including user-defined tests --can be inverted. The
 #' specialized [confint()] methods for `wald_test` and `z_test` give exact
 #' analytical intervals; `invert_test` gives numerical intervals for
 #' arbitrary tests at the cost of a grid search.
@@ -1192,7 +1195,7 @@ union_test <- function(...) {
 #' # Compare with the analytical confint (should agree up to grid resolution)
 #' confint(wald_test(estimate = 2.5, se = 0.8))
 #'
-#' # Invert ANY user-defined test — no special support needed
+#' # Invert ANY user-defined test --no special support needed
 #' my_test <- function(theta) {
 #'   stat <- (5.0 - theta)^2 / 2
 #'   hypothesis_test(stat = stat,

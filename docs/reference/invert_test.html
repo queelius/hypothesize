@@ -115,7 +115,7 @@ confidence set contains exactly those parameter values \(\theta_0\)
 for which the test of \(H_0: \theta = \theta_0\) would not reject at
 level \(\alpha\). This function makes that duality operational.</p>
 <p><code>invert_test</code> is the most general confidence set constructor in the
-package. Any test — including user-defined tests — can be inverted. The
+package. Any test –including user-defined tests –can be inverted. The
 specialized <code><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint()</a></code> methods for <code>wald_test</code> and <code>z_test</code> give exact
 analytical intervals; <code>invert_test</code> gives numerical intervals for
 arbitrary tests at the cost of a grid search.</p>
@@ -159,7 +159,7 @@ abstraction: because all tests implement the same interface (<code><a href="pval
 <span class="r-out co"><span class="r-pr">#&gt;</span>     lower     upper </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 0.9320288 4.0679712 </span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Invert ANY user-defined test — no special support needed</span></span></span>
+<span class="r-in"><span><span class="co"># Invert ANY user-defined test --no special support needed</span></span></span>
 <span class="r-in"><span><span class="va">my_test</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">theta</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="va">stat</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fl">5.0</span> <span class="op">-</span> <span class="va">theta</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span> <span class="op">/</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="hypothesis_test.html">hypothesis_test</a></span><span class="op">(</span>stat <span class="op">=</span> <span class="va">stat</span>,</span></span>

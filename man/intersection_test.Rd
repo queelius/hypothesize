@@ -19,12 +19,12 @@ Combines hypothesis tests using the AND rule: rejects only when ALL
 component tests reject.
 }
 \details{
-The p-value is \eqn{\max(p_1, \ldots, p_k)} — the intersection rejects
+The p-value is \eqn{\max(p_1, \ldots, p_k)} --the intersection rejects
 at level \eqn{\alpha} if and only if every component p-value is below
 \eqn{\alpha}.
 
 This is the intersection-union test (IUT; Berger, 1982). No multiplicity
-correction is needed — the max is inherently conservative.
+correction is needed --the max is inherently conservative.
 }
 \section{Use Case --- Bioequivalence}{
 

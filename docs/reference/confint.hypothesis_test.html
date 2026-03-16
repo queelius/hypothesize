@@ -144,10 +144,11 @@ cannot produce confidence intervals directly.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Significant at 5% level: FALSE</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># z-test also supports confint</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">z</span> <span class="op">&lt;-</span> <span class="fu"><a href="z_test.html">z_test</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">50</span>, mean <span class="op">=</span> <span class="fl">10</span>, sd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>, mu0 <span class="op">=</span> <span class="fl">9</span>, sigma <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/confint.html" class="external-link">confint</a></span><span class="op">(</span><span class="va">z</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     lower     upper </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  9.415263 10.523986 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  9.646535 10.755258 </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

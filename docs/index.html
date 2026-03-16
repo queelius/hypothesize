@@ -164,13 +164,14 @@
 <span><span class="co">#&gt; Degrees of freedom: 3</span></span>
 <span><span class="co">#&gt; Significant at 5% level: TRUE</span></span>
 <span></span>
-<span><span class="co"># Or from fitted models — dof derived automatically</span></span>
+<span><span class="co"># Or from fitted models -- dof derived automatically</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">50</span>; <span class="va">y</span> <span class="op">&lt;-</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">3</span> <span class="op">*</span> <span class="va">x</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">50</span>, sd <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/lrt.html">lrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/logLik.html" class="external-link">logLik</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/stats/logLik.html" class="external-link">logLik</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Hypothesis test (likelihood_ratio_test)</span></span>
 <span><span class="co">#&gt; -----------------------------</span></span>
-<span><span class="co">#&gt; Test statistic: 222.696853179322</span></span>
-<span><span class="co">#&gt; P-value: 2.33424827983589e-50</span></span>
+<span><span class="co">#&gt; Test statistic: 203.015531891017</span></span>
+<span><span class="co">#&gt; P-value: 4.58985868918993e-46</span></span>
 <span><span class="co">#&gt; Degrees of freedom: 1</span></span>
 <span><span class="co">#&gt; Significant at 5% level: TRUE</span></span></code></pre></div>
 </div>

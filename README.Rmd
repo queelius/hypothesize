@@ -77,7 +77,8 @@ wald_test(estimate = 1.8, se = 0.7)
 # From raw log-likelihoods
 lrt(null_loglik = -150, alt_loglik = -140, dof = 3)
 
-# Or from fitted models — dof derived automatically
+# Or from fitted models -- dof derived automatically
+set.seed(42)
 x <- 1:50; y <- 2 + 3 * x + rnorm(50, sd = 5)
 lrt(logLik(lm(y ~ 1)), logLik(lm(y ~ x)))
 ```

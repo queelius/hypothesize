@@ -36,7 +36,7 @@ for which the test of \eqn{H_0: \theta = \theta_0} would not reject at
 level \eqn{\alpha}. This function makes that duality operational.
 
 \code{invert_test} is the most general confidence set constructor in the
-package. Any test — including user-defined tests — can be inverted. The
+package. Any test --including user-defined tests --can be inverted. The
 specialized \code{\link[=confint]{confint()}} methods for \code{wald_test} and \code{z_test} give exact
 analytical intervals; \code{invert_test} gives numerical intervals for
 arbitrary tests at the cost of a grid search.
@@ -62,7 +62,7 @@ upper(cs)
 # Compare with the analytical confint (should agree up to grid resolution)
 confint(wald_test(estimate = 2.5, se = 0.8))
 
-# Invert ANY user-defined test — no special support needed
+# Invert ANY user-defined test --no special support needed
 my_test <- function(theta) {
   stat <- (5.0 - theta)^2 / 2
   hypothesis_test(stat = stat,

@@ -103,7 +103,8 @@ from any fitted model:
 test <- lrt(null_loglik = -250, alt_loglik = -240, dof = 3)
 test
 
-# Or from fitted models — dof is derived automatically
+# Or from fitted models -- dof is derived automatically
+set.seed(42)
 x <- 1:50
 y <- 2 + 3 * x + rnorm(50, sd = 5)
 m0 <- lm(y ~ 1)       # intercept only

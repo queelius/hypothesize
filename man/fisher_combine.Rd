@@ -78,6 +78,7 @@ is_significant_at(combined, 0.05)  # Stronger evidence together
 # Or combine hypothesis_test objects directly
 t1 <- wald_test(estimate = 1.5, se = 0.9)
 t2 <- wald_test(estimate = 0.8, se = 0.5)
+set.seed(1)
 t3 <- z_test(rnorm(30, mean = 0.3), mu0 = 0, sigma = 1)
 
 fisher_combine(t1, t2, t3)

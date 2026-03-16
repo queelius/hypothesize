@@ -92,6 +92,7 @@ ll_alt  <- structure(-140, df = 5, nobs = 100, class = "logLik")
 lrt(ll_null, ll_alt)  # dof = 5 - 2 = 3
 
 # With real models (any model supporting stats::logLik)
+set.seed(42)
 x <- 1:50
 y <- 2 + 3 * x + rnorm(50)
 m0 <- lm(y ~ 1)

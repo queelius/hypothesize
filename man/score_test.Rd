@@ -40,12 +40,12 @@ alongside the Wald test (\code{\link[=wald_test]{wald_test()}}) and the likeliho
 they differ in what they require:
 
 \itemize{
-\item \strong{Wald test}: Needs the MLE and its standard error — requires
+\item \strong{Wald test}: Needs the MLE and its standard error -- requires
 fitting the alternative model.
-\item \strong{LRT}: Needs maximized log-likelihoods under both models —
+\item \strong{LRT}: Needs maximized log-likelihoods under both models --
 requires fitting both.
 \item \strong{Score test}: Needs only the score and information at
-\eqn{\theta_0} — requires fitting only the null model.
+\eqn{\theta_0} -- requires fitting only the null model.
 }
 
 This makes the score test computationally attractive when the null model

@@ -189,6 +189,7 @@ often preferred because it is invariant to reparameterization.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Significant at 5% level: TRUE</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># With real models (any model supporting stats::logLik)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">:</span><span class="fl">50</span></span></span>
 <span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fl">2</span> <span class="op">+</span> <span class="fl">3</span> <span class="op">*</span> <span class="va">x</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">50</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">m0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="fl">1</span><span class="op">)</span></span></span>
@@ -196,8 +197,8 @@ often preferred because it is invariant to reparameterization.</p>
 <span class="r-in"><span><span class="fu">lrt</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/logLik.html" class="external-link">logLik</a></span><span class="op">(</span><span class="va">m0</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/stats/logLik.html" class="external-link">logLik</a></span><span class="op">(</span><span class="va">m1</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Hypothesis test (likelihood_ratio_test)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -----------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Test statistic: 387.450083520437</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> P-value: 2.97167819035934e-86</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Test statistic: 365.2825932939</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> P-value: 1.99222035561072e-81</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Degrees of freedom: 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Significant at 5% level: TRUE</span>
 <span class="r-in"><span></span></span>

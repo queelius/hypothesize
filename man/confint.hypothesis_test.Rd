@@ -64,6 +64,7 @@ confint(w, level = 0.99) # 99\% CI
 wald_test(estimate = 2.5, se = 0.8, null_value = 2.5)
 
 # z-test also supports confint
+set.seed(1)
 z <- z_test(rnorm(50, mean = 10, sd = 2), mu0 = 9, sigma = 2)
 confint(z)
 

@@ -167,13 +167,14 @@ methods (<code><a href="pval.html">pval()</a></code>, <code><a href="test_stat.h
 <span class="r-in"><span><span class="co"># Or combine hypothesis_test objects directly</span></span></span>
 <span class="r-in"><span><span class="va">t1</span> <span class="op">&lt;-</span> <span class="fu"><a href="wald_test.html">wald_test</a></span><span class="op">(</span>estimate <span class="op">=</span> <span class="fl">1.5</span>, se <span class="op">=</span> <span class="fl">0.9</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">t2</span> <span class="op">&lt;-</span> <span class="fu"><a href="wald_test.html">wald_test</a></span><span class="op">(</span>estimate <span class="op">=</span> <span class="fl">0.8</span>, se <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">t3</span> <span class="op">&lt;-</span> <span class="fu"><a href="z_test.html">z_test</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">30</span>, mean <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span>, mu0 <span class="op">=</span> <span class="fl">0</span>, sigma <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">fisher_combine</span><span class="op">(</span><span class="va">t1</span>, <span class="va">t2</span>, <span class="va">t3</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Hypothesis test (fisher_combined_test)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> -----------------------------</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Test statistic: 20.0952383449363</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> P-value: 0.00266333421941262</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Test statistic: 15.7554903967377</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> P-value: 0.0151282875016359</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Degrees of freedom: 6</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Significant at 5% level: TRUE</span>
 <span class="r-in"><span></span></span>
